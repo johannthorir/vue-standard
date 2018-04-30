@@ -22,39 +22,39 @@
             <h3 v-on:click="projectile.show = !projectile.show" v-bind:class="{ active : projectile.show }">{{projectile.title}}</h3>
             <div class="inputs" v-show="projectile.show">
                 <label class="field"><span class="label">Name</span><input type="text" v-model="projectile.name" size="20"></label>
-                <number-input v-model.number="projectile.weight"   name="Bullet Weight"  :unitIndex="unitIndices.projectile.weight"    :units="units.bulletWeight"         @input="refresh()"></number-input>
-                <number-input v-model.number="projectile.bc"       name="G1 BC        "  :unitIndex="unitIndices.projectile.bc"        :units="units.ballisticCoefficient" @input="refresh()"></number-input>
-                <number-input v-model.number="projectile.tempSens" name="Temp. sens.  "  :unitIndex="unitIndices.projectile.tempSens"  :units="units.tempSens"             @input="refresh()"></number-input>
+                <number-input v-model.number="projectile.weight"   name="Bullet Weight"  :units="units.bulletWeight"         @input="refresh()"></number-input>
+                <number-input v-model.number="projectile.bc"       name="G7 BC        "  :units="units.ballisticCoefficient" @input="refresh()"></number-input>
+                <number-input v-model.number="projectile.tempSens" name="Temp. sens.  "  :units="units.tempSens"             @input="refresh()"></number-input>
             </div>
         </div>
         <div class="s">
             <h3 v-on:click="scopeInfo.show = !scopeInfo.show" v-bind:class="{ active : scopeInfo.show }">{{scopeInfo.title}}</h3>
             <div class="inputs" v-show="scopeInfo.show">
-                <number-input v-model.number="scopeInfo.currentClick"  name="Current Click" :unitIndex="unitIndices.scopeInfo.currentClick" :units="units.scopeClick" @input="refresh()"></number-input>
-                <number-input v-model.number="scopeInfo.height      "  name="Scope Height " :unitIndex="unitIndices.scopeInfo.height      " :units="units.offset"     @input="refresh()"></number-input>
-                <number-input v-model.number="scopeInfo.verClick    "  name="Vert. click  " :unitIndex="unitIndices.scopeInfo.verClick    " :units="units.clickSize"  @input="refresh()"></number-input>
-                <number-input v-model.number="scopeInfo.horClick    "  name="Hor. click   " :unitIndex="unitIndices.scopeInfo.horClick    " :units="units.clickSize"  @input="refresh()"></number-input>
+                <number-input v-model.number="scopeInfo.currentClick"  name="Current Click"  :units="units.scopeClick" @input="refresh()"></number-input>
+                <number-input v-model.number="scopeInfo.height      "  name="Scope Height "  :units="units.offset"     @input="refresh()"></number-input>
+                <number-input v-model.number="scopeInfo.verClick    "  name="Vert. click  "  :units="units.clickSize"  @input="refresh()"></number-input>
+                <number-input v-model.number="scopeInfo.horClick    "  name="Hor. click   "  :units="units.clickSize"  @input="refresh()"></number-input>
             </div>
         </div>
         <div class="s">
             <h3 v-on:click="zeroInfo.show = !zeroInfo.show" v-bind:class="{ active : zeroInfo.show }">{{zeroInfo.title}}</h3>
             <div class="inputs" v-show="zeroInfo.show">
-                <number-input v-model.number="zeroInfo.speed"       name="Speed"       :unitIndex="unitIndices.zeroInfo.speed"        :units="units.fps"          @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.range"       name="Range"       :unitIndex="unitIndices.zeroInfo.range"        :units="units.range"        @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.offset"      name="Offset"      :unitIndex="unitIndices.zeroInfo.offset"       :units="units.offset"       @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.click"       name="Click"       :unitIndex="unitIndices.zeroInfo.click"        :units="units.scopeClick"   @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.temperature" name="Temperature" :unitIndex="unitIndices.zeroInfo.temperature"  :units="units.temperature"  @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.pressure"    name="Pressure"    :unitIndex="unitIndices.zeroInfo.pressure"     :units="units.pressure"     @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.speed"       name="Speed"       :units="units.fps"          @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.range"       name="Range"       :units="units.range"        @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.offset"      name="Offset"      :units="units.offset"       @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.click"       name="Click"       :units="units.scopeClick"   @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.temperature" name="Temperature" :units="units.temperature"  @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.pressure"    name="Pressure"    :units="units.pressure"     @input="refresh()"></number-input>
             </div>
         </div>
         <div class="s">
             <h3 v-on:click="environment.show = !environment.show" v-bind:class="{ active : environment.show }">{{environment.title}}</h3>
             <div class="inputs" v-show="environment.show">
-                <number-input v-model.number="environment.windspeed     " name="Wind speed        " :unitIndex="unitIndices.environment.windspeed     "  :units="units.speed"        @input="refresh()"></number-input>
-                <number-input v-model.number="environment.winddirection " name="Wind direction    " :unitIndex="unitIndices.environment.winddirection "  :units="units.direction"    @input="refresh()"></number-input>
-                <number-input v-model.number="environment.temperature   " name="Local temperature " :unitIndex="unitIndices.environment.temperature   "  :units="units.temperature"  @input="refresh()"></number-input>
-                <number-input v-model.number="environment.pressure      " name="Local pressure    " :unitIndex="unitIndices.environment.pressure      "  :units="units.pressure"     @input="refresh()"></number-input>
-                <number-input v-model.number="environment.shootdirection" name="Shooting direction" :unitIndex="unitIndices.environment.shootdirection"  :units="units.direction"    @input="refresh()"></number-input>
+                <number-input v-model.number="environment.windspeed     " name="Wind speed        "  :units="units.speed"        @input="refresh()"></number-input>
+                <number-input v-model.number="environment.winddirection " name="Wind direction    "  :units="units.direction"    @input="refresh()"></number-input>
+                <number-input v-model.number="environment.temperature   " name="Local temperature "  :units="units.temperature"  @input="refresh()"></number-input>
+                <number-input v-model.number="environment.pressure      " name="Local pressure    "  :units="units.pressure"     @input="refresh()"></number-input>
+                <number-input v-model.number="environment.shootdirection" name="Shooting direction"  :units="units.direction"    @input="refresh()"></number-input>
                 <label class="field center"><button id="weatherbutton" v-on:click="fetchWeather">Get actual weather</button> </label>
             </div>
         </div>
@@ -76,6 +76,119 @@
     </div>
 </div>
 </template>
+
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+div.hello { display : none }
+h1 {
+    margin: 15px; 
+    font-weight: bold;
+    color : #457; 
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+a {    color: #42b983;}
+
+h3 { 
+    font-size : 15pt; 
+    cursor : pointer; 
+    color : white;
+    font-style : italic;
+    background-color : #457; 
+    padding : 2px 2px 2px 10px; 
+    margin: 0px 0px 1px 0px; 
+    min-width : 384px;
+    max-width : 781px;
+    min-height : 40px;
+    line-height : 35px;
+    vertical-align:top;
+    
+}
+h3:before {
+    content : url("../assets/rightarrow.svg"); /*  "\2630\00FE0E " */;
+}
+
+h3.active:before {
+    content : url("../assets/downarrow.svg"); /* "\2610\00fe0e ";*/
+    font-style:normal;
+}
+
+label.field { 
+    display : inline-block; 
+    min-width : 379px; 
+    max-width : 379px;
+    width : 379px; 
+    padding : 15px;
+    margin : 0px; 
+    margin-bottom : 1px;
+    margin-right : 1px;
+    min-height : 30px; 
+    border : none; 
+    background : #eee;
+    font-size : 12pt;
+}
+
+.center {
+    text-align : center;
+}
+span.label { 
+    display : inline-block; 
+    width : 70px; 
+    height : 19px;
+}
+#weatherbutton {
+    width : 214px;
+    text-align : center;
+    font-size : 120%;
+    
+}
+.inputs:before {
+    content: "";
+    display: inline-block;
+    vertical-align:top;
+    height: 100%;
+}
+input {
+    width : 214px; 
+    text-align : left; 
+    padding : 0px;
+    padding-left : 3px; 
+    border : none; 
+    font-size : 140%; 
+    border-bottom : 1px solid rgba(0,0,0,0.2);
+    
+}
+
+.inputs {
+    margin : 0ex; 
+    padding : 0px; 
+    font-size : 0px;
+    vertical-align : top;
+}
+
+div.s {
+    display : inline-block;
+    vertical-align : top;
+    min-width : 409px; 
+    max-width : 409px;
+    
+    margin-right : 1px;
+}
+div.info {
+    margin : 10px;
+    text-align : center;
+}
+</style>
 
 <script>
 import Solution from './Solution.vue';
@@ -135,7 +248,10 @@ const Units = {
     Grain:               { unit: "gr",       step: 1,     precision: 0, a: 0,  b: 1                 },
     GrainAsGram:         { unit: "g",        step: 0.05,  precision: 2, a: 0,  b: 0.0647989         },
     NoneSmall:           { unit: "",         step: 0.001, precision: 3, a: 0,  b: 1                 },
-    FtPrSecPrC:          { unit: "ft/s°C",   step: 0.1,   precision: 1, a: 0,  b: 1                 },
+    FPSprC:              { unit: "fps/°C",   step: 0.1,   precision: 1, a: 0,  b: 1                 },
+    FPSprCasFPSprF:      { unit: "fps/°F",   step: 0.1,   precision: 1, a: 0,  b: 0.555555555555556 },
+    FPSprCasMPSprC:      { unit: "m/s / °C", step: 0.01,  precision: 2, a: 0,  b: 0.3048            },
+    FPSprCasMPSprF:      { unit: "m/s / °F", step: 0.01,  precision: 2, a: 0,  b: 0.169333333333333 },
     FPS:                 { unit: "fps",      step: 1,     precision: 0, a: 0,  b: 1                 },
     FPSasMPS:            { unit: "m/s",      step: 0.5,   precision: 1, a: 0,  b: 0.3048            },
     Meters:              { unit: "m",        step: 5,     precision: 0, a: 0,  b: 1                 },
@@ -179,7 +295,7 @@ export default {
         fetchWeather: function() {
             Vue.axios.get(localWeather)
                 .then(response => { 
-                    console.log(response.data);
+                    // console.log(response.data);
                     let d = response.data;
                     let e = {
                         title : "KEF Environment at " + new Date(d.dt * 1000).toLocaleTimeString("IS-is"),
@@ -279,16 +395,17 @@ export default {
     },
     data : function () {
         return {
+            /*
             unitIndices : {
                 projectile:  { weight: 0,  bc: 0, tempSens: 0 },
                 scopeInfo:   { currentClick: 0, height: 0, verClick: 0, horClick: 0 },
                 zeroInfo:    { speed: 0, range: 0, offset: 0, click: 0, temperature: 0, pressure:0 },
                 environment: { windspeed: 0, winddirection: 0,temperature: 0,pressure: 0,shootdirection: 0 }
-            },
+            }, */
             units : {
                 bulletWeight :  [ Units.Grain, Units.GrainAsGram ],
                 ballisticCoefficient: [ Units.NoneSmall ],
-                tempSens: [ Units.FtPrSecPrC ],
+                tempSens: [ Units.FPSprC, Units.FPSprCasFPSprF, Units.FPSprCasMPSprC, Units.FPSprCasMPSprF ],
                 fps:  [ Units.FPS, Units.FPSasMPS ],
                 range: [ Units.Meters, Units.MetersAsYards, Units.MetersAsFeet ],
                 speed: [ Units.MPS, Units.MPSasKM, Units.MPSasMPH ],
@@ -300,14 +417,15 @@ export default {
                 pressure: [ Units.HPA, Units.HPAasINHG ],
             },                                                                                                                                                                                                                                                             
             msg: 'Bleh',
-            sm: new StandardModel(1000, 'G1'),
+            sm: new StandardModel(1000, 'G7'),
             showScopeAdjust : true,
             projectile : {
                 title         : 'Projectile',
                 show          : false,
                 name          : 'Nosler BT 95',
                 weight        : 95,   // grain.
-                bc            : 0.379,    // G1 ballistic coefficient.
+                // bc            : 0.379,    // G1 ballistic coefficient.
+                bc : 0.190, // G7 ballistics coefficent
                 tempSens      : 3.1,  // fps pr degree Celsius.
                 adjustedSpeed : 3000,
                 adjustedBC    : 0.379
@@ -381,113 +499,3 @@ export default {
     }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-div.hello { display : none }
-h1 {
-    margin: 15px; 
-    font-weight: normal; 
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    display: inline-block;
-    margin: 0 10px;
-}
-
-a {    color: #42b983;}
-
-h3 { 
-    font-size : 15pt; 
-    cursor : pointer; 
-    color : white;
-    font-style : italic;
-    background-color : #8ad; 
-    padding : 2px 2px 2px 10px; 
-    margin: 0px 0px 1px 0px; 
-    min-width : 384px;
-    max-width : 781px;
-    min-height : 40px;
-    line-height : 35px;
-    vertical-align : middle;
-    
-}
-h3:before {
-    content : "\2630\00FE0E ";
-    font-style:normal;
-}
-
-h3.active:before {
-    content : "\2610\00fe0e ";
-    font-style:normal;
-}
-        label.field { 
-            display : inline-block; 
-            min-width : 379px; 
-            max-width : 379px;
-            width : 379px; 
-            padding : 15px;
-            margin : 0px; 
-            margin-bottom : 1px;
-            margin-right : 1px;
-            min-height : 30px; 
-            border : none; 
-            background : #eee;
-            font-size : 12pt;
-         }
-         .center {
-             text-align : center;
-         }
-        span.label { 
-            display : inline-block; 
-            width : 70px; 
-            height : 19px;
-        }
-        #weatherbutton {
-            width : 214px;
-            text-align : center;
-            font-size : 120%;
-           
-        }
-        .inputs:before {
-            content: "";
-            display: inline-block;
-            vertical-align:top;
-            height: 100%;
-        }
-        input {
-            width : 214px; 
-            text-align : left; 
-            padding : 0px;
-            padding-left : 3px; 
-            border : none; 
-            font-size : 140%; 
-            border-bottom : 1px solid rgba(0,0,0,0.2);
-            
-        }
-
-.inputs {
-    margin : 0ex; 
-    padding : 0px; 
-    font-size : 0px;
-    vertical-align : top;
-}
-
-div.s {
-    display : inline-block;
-    vertical-align : top;
-    min-width : 409px; 
-    max-width : 409px;
-    
-    margin-right : 1px;
-}
-div.info {
-    margin : 10px;
-    text-align : center;
-}
-</style>
