@@ -1,6 +1,6 @@
 # vue-standard
 
-> A Vue.js project
+> The Standard Model ballistic solver set up as a single page web app in Vue.
 
 ## Build Setup
 
