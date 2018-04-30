@@ -123,8 +123,8 @@ function StandardModel(maxRange, dragFunction) {
     // Adjust a drag coefficient to environmentals.
     function AtmCorrect(DragCoefficient, Altitude, Barometer, Temperature, RelativeHumidity) {
         function calcFR(Temperature, Pressure, RelativeHumidity) {
-            var VPw = Temperature * (Temperature * (Temperature * 4e-6 - 4e-4) + 0.0234) - 0.2517;
-            var FRH = 0.995 * (Pressure / (Pressure - 0.3783 * RelativeHumidity * VPw));
+            let VPw = Temperature * (Temperature * (Temperature * 4e-6 - 4e-4) + 0.0234) - 0.2517;
+            let FRH = 0.995 * (Pressure / (Pressure - 0.3783 * RelativeHumidity * VPw));
             return FRH;
         }
 
@@ -138,17 +138,17 @@ function StandardModel(maxRange, dragFunction) {
         }
 
         function calcFA(Altitude) {
-            var a = -4e-15;
-            var b = 4e-10;
-            var c = -3e-5;
-            var d = 1;
+            const a = -4e-15;
+            const b = 4e-10;
+            const c = -3e-5;
+            const d = 1;
             return 1 / (Altitude * (Altitude * (Altitude * a + b) + c) + d);
         }
 
-        var FA = calcFA(Altitude);
-        var FT = calcFT(Temperature, Altitude);
-        var FR = calcFR(Temperature, Barometer, RelativeHumidity);
-        var FP = calcFP(Barometer);
+        let FA = calcFA(Altitude);
+        let FT = calcFT(Temperature, Altitude);
+        let FR = calcFR(Temperature, Barometer, RelativeHumidity);
+        let FP = calcFP(Barometer);
 
         // Calculate the atmospheric correction factor
         var CD = (FA * (1 + FT - FP) * FR);
@@ -429,16 +429,16 @@ function StandardModel(maxRange, dragFunction) {
 
     function PBR(DragCoefficient, Vi, SightHeight, VitalSize) {
         // search results.
-        var zero = -1; // returned
-        var farzero = 0; // returned
-        var minPbrRange = 0; // returned
-        var maxPbrRange = 0; // returned
-        var tin100 = 0; // returned
+        let zero = -1; // returned
+        let farzero = 0; // returned
+        let minPbrRange = 0; // returned
+        let maxPbrRange = 0; // returned
+        let tin100 = 0; // returned
 
         // initial control values for the search.
-        var ZAngle = 0;
-        var Step = 10;
-        var quit = false;
+        let ZAngle = 0;
+        let Step = 10;
+        let quit = false;
 
         while(!quit) {
             let keep = false;
