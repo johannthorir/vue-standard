@@ -46,38 +46,18 @@ export default {
     name: "number-input",
     props: {
         name: String, 
-        value: Number, 
-        step:Number, 
-        precision:Number,
-        unit:String,
+        value: Number,         
         units : {
             type: Array,
-            default : function() {
-                return [ 
-                    {
-                        unit: "°C",
-                        step: 0.1,
-                        precision: 1,
-                        a: 0,
-                        b: 1
-                    },
-                    {
-                        unit: "°F",
-                        step: 0.1,
-                        precision: 1,
-                        a: 32,
-                        b: 1.8,
-                    }
-                ];
-            }
+            default : function() { return [ { unit: "",step: 1,precision: 0,a: 0,b: 1}]; }
         } 
     },
    
     data : function() {
         return { 
-            isActive : false,
-            unitIndex : 0,
+            isActive : false,            
             displayed : 0,
+            unitIndex: 0,
         };
 
     },
@@ -103,8 +83,7 @@ export default {
             // we must emit the value in the base unit - which is the first unit in the units array.
             this.$emit('input', parseFloat(this.value.toFixed(this.units[0].precision))); 
         }, 100, { leading : true, maxWait : 500 }),
-        toggleUnits: function() {            
-            console.log("toggling units")
+        toggleUnits: function() {             
             this.unitIndex = (this.unitIndex + 1) % this.units.length;
         }
     },

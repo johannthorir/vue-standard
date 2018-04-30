@@ -22,39 +22,39 @@
             <h3 v-on:click="projectile.show = !projectile.show" v-bind:class="{ active : projectile.show }">{{projectile.title}}</h3>
             <div class="inputs" v-show="projectile.show">
                 <label class="field"><span class="label">Name</span><input type="text" v-model="projectile.name" size="20"></label>
-                <number-input v-model.number="projectile.weight"   name="Bullet Weight"  :units="units.bulletWeight"         @input="refresh()"></number-input>
-                <number-input v-model.number="projectile.bc"       name="G1 BC        "  :units="units.ballisticCoefficient" @input="refresh()"></number-input>
-                <number-input v-model.number="projectile.tempSens" name="Temp. sens.  "  :units="units.tempSens"             @input="refresh()"></number-input>
+                <number-input v-model.number="projectile.weight"   name="Bullet Weight"  :unitIndex="unitIndices.projectile.weight"    :units="units.bulletWeight"         @input="refresh()"></number-input>
+                <number-input v-model.number="projectile.bc"       name="G1 BC        "  :unitIndex="unitIndices.projectile.bc"        :units="units.ballisticCoefficient" @input="refresh()"></number-input>
+                <number-input v-model.number="projectile.tempSens" name="Temp. sens.  "  :unitIndex="unitIndices.projectile.tempSens"  :units="units.tempSens"             @input="refresh()"></number-input>
             </div>
         </div>
         <div class="s">
             <h3 v-on:click="scopeInfo.show = !scopeInfo.show" v-bind:class="{ active : scopeInfo.show }">{{scopeInfo.title}}</h3>
             <div class="inputs" v-show="scopeInfo.show">
-                <number-input v-model.number="scopeInfo.currentClick"  name="Current Click" :units="units.scopeClick" @input="refresh()"></number-input>
-                <number-input v-model.number="scopeInfo.height      "  name="Scope Height " :units="units.offset"     @input="refresh()"></number-input>
-                <number-input v-model.number="scopeInfo.verClick    "  name="Vert. click  " :units="units.clickSize"  @input="refresh()"></number-input>
-                <number-input v-model.number="scopeInfo.horClick    "  name="Hor. click   " :units="units.clickSize"  @input="refresh()"></number-input>
+                <number-input v-model.number="scopeInfo.currentClick"  name="Current Click" :unitIndex="unitIndices.scopeInfo.currentClick" :units="units.scopeClick" @input="refresh()"></number-input>
+                <number-input v-model.number="scopeInfo.height      "  name="Scope Height " :unitIndex="unitIndices.scopeInfo.height      " :units="units.offset"     @input="refresh()"></number-input>
+                <number-input v-model.number="scopeInfo.verClick    "  name="Vert. click  " :unitIndex="unitIndices.scopeInfo.verClick    " :units="units.clickSize"  @input="refresh()"></number-input>
+                <number-input v-model.number="scopeInfo.horClick    "  name="Hor. click   " :unitIndex="unitIndices.scopeInfo.horClick    " :units="units.clickSize"  @input="refresh()"></number-input>
             </div>
         </div>
         <div class="s">
             <h3 v-on:click="zeroInfo.show = !zeroInfo.show" v-bind:class="{ active : zeroInfo.show }">{{zeroInfo.title}}</h3>
             <div class="inputs" v-show="zeroInfo.show">
-                <number-input v-model.number="zeroInfo.speed"       name="Speed"       :units="units.fps"          @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.range"       name="Range"       :units="units.range"        @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.offset"      name="Offset"      :units="units.offset"       @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.click"       name="Click"       :units="units.scopeClick"   @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.temperature" name="Temperature" :units="units.temperature"  @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.pressure"    name="Pressure"    :units="units.pressure"     @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.speed"       name="Speed"       :unitIndex="unitIndices.zeroInfo.speed"        :units="units.fps"          @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.range"       name="Range"       :unitIndex="unitIndices.zeroInfo.range"        :units="units.range"        @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.offset"      name="Offset"      :unitIndex="unitIndices.zeroInfo.offset"       :units="units.offset"       @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.click"       name="Click"       :unitIndex="unitIndices.zeroInfo.click"        :units="units.scopeClick"   @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.temperature" name="Temperature" :unitIndex="unitIndices.zeroInfo.temperature"  :units="units.temperature"  @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.pressure"    name="Pressure"    :unitIndex="unitIndices.zeroInfo.pressure"     :units="units.pressure"     @input="refresh()"></number-input>
             </div>
         </div>
         <div class="s">
             <h3 v-on:click="environment.show = !environment.show" v-bind:class="{ active : environment.show }">{{environment.title}}</h3>
             <div class="inputs" v-show="environment.show">
-                <number-input v-model.number="environment.windspeed     " name="Wind speed        " :units="units.speed"        @input="refresh()"></number-input>
-                <number-input v-model.number="environment.winddirection " name="Wind direction    " :units="units.direction"    @input="refresh()"></number-input>
-                <number-input v-model.number="environment.temperature   " name="Local temperature " :units="units.temperature"  @input="refresh()"></number-input>
-                <number-input v-model.number="environment.pressure      " name="Local pressure    " :units="units.pressure"     @input="refresh()"></number-input>
-                <number-input v-model.number="environment.shootdirection" name="Shooting direction" :units="units.direction"    @input="refresh()"></number-input>
+                <number-input v-model.number="environment.windspeed     " name="Wind speed        " :unitIndex="unitIndices.environment.windspeed     "  :units="units.speed"        @input="refresh()"></number-input>
+                <number-input v-model.number="environment.winddirection " name="Wind direction    " :unitIndex="unitIndices.environment.winddirection "  :units="units.direction"    @input="refresh()"></number-input>
+                <number-input v-model.number="environment.temperature   " name="Local temperature " :unitIndex="unitIndices.environment.temperature   "  :units="units.temperature"  @input="refresh()"></number-input>
+                <number-input v-model.number="environment.pressure      " name="Local pressure    " :unitIndex="unitIndices.environment.pressure      "  :units="units.pressure"     @input="refresh()"></number-input>
+                <number-input v-model.number="environment.shootdirection" name="Shooting direction" :unitIndex="unitIndices.environment.shootdirection"  :units="units.direction"    @input="refresh()"></number-input>
                 <label class="field center"><button id="weatherbutton" v-on:click="fetchWeather">Get actual weather</button> </label>
             </div>
         </div>
@@ -130,6 +130,36 @@ Vue.directive('rotator', {
 
 */
 
+// units:
+const Units = {
+    Grain:               { unit: "gr",       step: 1,     precision: 0, a: 0,  b: 1                 },
+    GrainAsGram:         { unit: "g",        step: 0.05,  precision: 2, a: 0,  b: 0.0647989         },
+    NoneSmall:           { unit: "",         step: 0.001, precision: 3, a: 0,  b: 1                 },
+    FtPrSecPrC:          { unit: "ft/s°C",   step: 0.1,   precision: 1, a: 0,  b: 1                 },
+    FPS:                 { unit: "fps",      step: 1,     precision: 0, a: 0,  b: 1                 },
+    FPSasMPS:            { unit: "m/s",      step: 0.5,   precision: 1, a: 0,  b: 0.3048            },
+    Meters:              { unit: "m",        step: 5,     precision: 0, a: 0,  b: 1                 },
+    MetersAsYards:       { unit: "yd",       step: 5,     precision: 0, a: 0,  b: 1.09361           },
+    MetersAsFeet:        { unit: "ft",       step: 1,     precision: 0, a: 0,  b: 3.28084           },
+    MPS:                 { unit: "m/s",      step: 0.1,   precision: 1, a: 0,  b: 1                 },
+    MPSasKM:             { unit: "km/h",     step: 0.1,   precision: 1, a: 0,  b: 3.6               },
+    MPSasMPH:            { unit: "Mph",      step: 0.1,   precision: 1, a: 0,  b: 2.23694           },
+    MM:                  { unit: "mm",       step: 1,     precision: 0, a: 0,  b: 1                 },
+    MMasCM:              { unit: "cm",       step: 0.5,   precision: 1, a: 0,  b: 0.1               },
+    MMasIN:              { unit: "in",       step: 0.1,   precision: 1, a: 0,  b: 0.0393701         },
+    NoneInteger:         { unit: "",         step: 1,     precision: 0, a: 0,  b: 1                 },
+    Celsius:             { unit: "°C",       step: 0.1,   precision: 1, a: 0,  b: 1                 },
+    CelsiusAsFahrenheit: { unit: "°F",       step: 0.1,   precision: 1, a: 32, b: 1.8               },                
+    Degrees:             { unit: "°",        step: 1,     precision: 0, a: 0,  b: 1                 },
+    DegreesAsClock:      { unit: "o'clock",  step: 1,     precision: 0, a: 0,  b: 12/360            },
+    DegreesAsMil:        { unit: "MIL",      step: 1,     precision: 0, a: 0,  b: 6400/360          },
+    MRAD:                { unit: "mrad",     step: 0.01,  precision: 2, a: 0,  b: 1                 },
+    MRADasCM:            { unit: "cm/100m",  step: 0.10,  precision: 1, a: 0,  b: 10                },
+    MRADasIN:            { unit: "in/100yd", step: 0.05,  precision: 2, a: 0,  b: 3.60000009259259  },
+    MRADasMOA:           { unit: "MOA",      step: 0.01,  precision: 2, a: 0,  b: 3.43774677078494  },
+    HPA:                 { unit: "hPa",      step:1,      precision: 0, a: 0,  b: 1                 },
+    HPAasINHG:           { unit: "inHg",     step:0.1,    precision: 1, a: 0,  b: 0.029529983071445 }
+};
 
 
 import _ from 'lodash';
@@ -142,6 +172,7 @@ Vue.component('Solution', Solution);
 /* eslint no-multi-spaces : 'off' */
 // const localWeather = "http://api.openweathermap.org/data/2.5/weather?units=metric&id=3415496&appid=befec05f975ea0def35e4d528bd0695f"
 const localWeather = "https://vpn.kiesel.is/weather/keflavik.json"
+
 export default {
     name: 'standard',
     methods : {
@@ -248,59 +279,25 @@ export default {
     },
     data : function () {
         return {
+            unitIndices : {
+                projectile:  { weight: 0,  bc: 0, tempSens: 0 },
+                scopeInfo:   { currentClick: 0, height: 0, verClick: 0, horClick: 0 },
+                zeroInfo:    { speed: 0, range: 0, offset: 0, click: 0, temperature: 0, pressure:0 },
+                environment: { windspeed: 0, winddirection: 0,temperature: 0,pressure: 0,shootdirection: 0 }
+            },
             units : {
-                bulletWeight :  [
-                    { unit: "gr", step:1,    precision:0, a:0, b:1 },
-                    { unit: "g",  step:0.05, precision:2, a:0, b:0.0647989 }
-                ],
-                ballisticCoefficient: [
-                    { unit: "", step:0.001, precision:3, a:0, b:1 }
-                ],
-                tempSens: [
-                    { unit: "ft/s°C", step:0.1, precision:1, a:0, b:1 }
-                ],
-                fps: [
-                    { unit: "fps", step:1,   precision:0, a:0, b:1 } ,
-                    { unit: "m/s", step:0.5, precision:1, a:0, b:0.3048 }
-                ],
-                range: [
-                    { unit: "m", step:5, precision:0, a:0, b:1 },
-                    { unit: "yd", step:5, precision:0, a:0, b:1.09361},
-                    { unit: "ft", step:1, precision:0, a:0, b:3.28084}
-                ],
-                speed: [
-                    { unit: "m/s",  step:0.1, precision:1, a:0, b:1       },
-                    { unit: "km/h", step:0.1, precision:1, a:0, b:3.6     },
-                    { unit: "Mph",  step:0.1, precision:1, a:0, b:2.23694 }
-                ],
-                offset: [
-                    { unit: "mm", step:1, precision:0, a:0, b:1  },
-                    { unit: "cm", step:0.5, precision:1, a:0, b:0.1 },
-                    { unit: "in", step:0.1, precision:1, a:0, b:0.0393701 },
-                    { unit: "ft", step:0.01, precision:3, a:0, b:0.00328084 }
-                ],
-                scopeClick: [
-                    { unit: "", step:1, precision:0, a:0, b:1 }
-                ],
-                temperature: [
-                    {  unit: "°C", step: 0.1, precision: 1, a:  0, b: 1   },
-                    {  unit: "°F", step: 0.1, precision: 1, a: 32, b: 1.8 }                
-                ],
-                direction: [
-                    { unit: "°",        step: 1, precision: 0, a:0, b:1 },
-                    { unit: "o'clock",  step: 1, precision: 0, a:0, b:12/360  },
-                    { unit: "MIL", step: 1, precision: 0, a:0, b:6400/360 }
-                ],
-                clickSize: [
-                    { unit: "mrad",     step: 0.01, precision: 2, a:0, b: 1 },
-                    { unit: "cm/100m",  step: 0.10, precision: 1, a:0, b: 10 },
-                    { unit: "in/100yd", step: 0.05, precision: 2, a:0, b: 3.60000009259259  },
-                    { unit: "MOA",      step: 0.01, precision: 2, a:0, b: 3.43774677078494   }
-                ],
-                pressure: [
-                    { unit: "hPa",  step:1, precision:0, a:0, b:1 },
-                    { unit: "inHg", step:0.1, precision:1, a:0, b:0.029529983071445}
-                ],
+                bulletWeight :  [ Units.Grain, Units.GrainAsGram ],
+                ballisticCoefficient: [ Units.NoneSmall ],
+                tempSens: [ Units.FtPrSecPrC ],
+                fps:  [ Units.FPS, Units.FPSasMPS ],
+                range: [ Units.Meters, Units.MetersAsYards, Units.MetersAsFeet ],
+                speed: [ Units.MPS, Units.MPSasKM, Units.MPSasMPH ],
+                offset: [ Units.MM, Units.MMasCM, Units.MMasIN ],
+                scopeClick: [ Units.NoneInteger ],
+                temperature: [ Units.Celsius, Units.CelsiusAsFahrenheit ],
+                direction: [ Units.Degrees, Units.DegreesAsClock, Units.DegreesAsMil ],
+                clickSize: [Units.MRAD, Units.MRADasCM, Units.MRADasIN, Units.MRADasMOA ],
+                pressure: [ Units.HPA, Units.HPAasINHG ],
             },                                                                                                                                                                                                                                                             
             msg: 'Bleh',
             sm: new StandardModel(1000, 'G1'),
