@@ -226,6 +226,7 @@ function StandardModel(maxRange, dragFunction) {
     // note that the values are in imperial
     function SolveAll(DragCoefficient, Weight, Vi, SightHeight, ShootingAngle, ZAngle, WindSpeed, WindAngle) {
         let result = {
+            'yardsolutions': [],
             'solutions': [],
             'maxpath': -10000000,
             'maxpathrange': 0,
@@ -247,8 +248,9 @@ function StandardModel(maxRange, dragFunction) {
         let y = -SightHeight / 12; //  ft
 
         let n = 0;
+        let m = 0;
         let drag = DF(dragFunction);
-
+        let zzz = 0;
         for(let t = 0; ;t = t + dt) {
             let vx1 = vx;
             let vy1 = vy;
@@ -262,7 +264,7 @@ function StandardModel(maxRange, dragFunction) {
 
             vx += dt * dvx;
             vy += dt * dvy;
-
+            let yards = x / 3;
             let meters = x / 3.280839895;
             let path = y * 12; // in inches
             if(meters >= n) {
@@ -285,6 +287,20 @@ function StandardModel(maxRange, dragFunction) {
                 n++;
             }
 
+            if(yards >= m) {
+                let solution = {};
+                solution.range = x / 3; // Range in yds ( 3 ft pr yard)
+                solution.path = path; // Path in inches
+                solution.time = t + dt; // Time in s
+                solution.windage = Windage(crosswind, Vi, x, t + dt); // Windage in inches
+                solution.velocity = v; // Velocity (combined)
+                solution.energy = Math.pow(v, 2) / 450380.0 * Weight;
+                solution.vel_x = vx; // Velocity (x)
+                solution.vel_y = vy; // Velocity (y)
+                result.yardsolutions[m] = solution;
+                m++;
+            }
+
             if(path > result.maxpath) {
                 result.maxpath = path;
                 result.maxpathrange = x / 3; // in yards
@@ -297,15 +313,16 @@ function StandardModel(maxRange, dragFunction) {
             let diffy = dt * (vy + vy1) / 2;
 
             // detect zero
-            if((y > 0) && ((y + diffy) < 0)) result.zeroat = meters;
+            if((y > 0) && ((y + diffy) < 0)) result.zeroat = yards;
 
             x += diffx;
             y += diffy;
 
             if(Math.abs(vy) > Math.abs(3 * vx)) break;
             if(n > maxRange) break;
+            zzz++;
         }
-
+       //  console.log(zzz.toString() + ' datapoints');
         return result;
     }
 
