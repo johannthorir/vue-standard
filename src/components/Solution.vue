@@ -14,6 +14,7 @@
     </table>
 </template>
 
+
 <script>
 export default {
     name: "Solution",
