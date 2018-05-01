@@ -335,7 +335,7 @@ export default {
             var  air_pressure          = this.sm.hPa_to_inHg(this.environment.pressure);
             var  bc_at_zero            = this.sm.AtmCorrect(projectile_bc, 0, sighting_pressure, sighting_temperature, 0.5 );
 
-            this.projectile.adjustedSpeed  = zeroInfo_speed + (environment_temperature - zeroInfo_temperature)*this.projectile.tempSens;
+            this.projectile.adjustedSpeed = zeroInfo_speed + (environment_temperature - zeroInfo_temperature)*this.projectile.tempSens;
             this.projectile.adjustedBC    = this.sm.AtmCorrect(projectile_bc, 0, air_pressure, temperature, 0.5 );
             this.zeroInfo.zeroAngle = this.sm.ZeroAngle(
                 bc_at_zero, 
@@ -360,7 +360,7 @@ export default {
             this.solution.maxpathrange   = res.maxpathrange * 0.9144; // yd -> m
             this.solution.outerpath      = res.outerpath * 0.0254; // in -> m
             this.solution.outerpathrange = res.outerpathrange * 0.9144; // yd -> m
-            this.solution.zeroAt         = res.zeroat;
+            this.solution.zeroAt         = res.zeroat * 0.9144; // yd -> m
             // console.log(res);
             var newPath = [];
             for (var k in this.solution.path) {
