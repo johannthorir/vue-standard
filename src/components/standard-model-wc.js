@@ -155,7 +155,7 @@ function StandardModel(maxRange, dragFunction) {
 
         return DragCoefficient * CD;
     }
-
+    // i.e total time elapsed minus the time it would have taken with no decelation) i.e. total time lost multiplied by the wind speed and some factor.
     function Windage(WindSpeed, Vi, xx, t) { return ((WindSpeed * 17.60) * (t - xx / Vi)); }
     function HeadWind(WindSpeed, WindAngle) { return (Math.cos(DegtoRad(WindAngle)) * WindSpeed); }
     function CrossWind(WindSpeed, WindAngle) { return (Math.sin(DegtoRad(WindAngle)) * WindSpeed); }
