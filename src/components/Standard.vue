@@ -1,3 +1,5 @@
+'use strict';
+
 <template>
 <div>
     <h1>{{ projectile.name }}</h1>
@@ -67,10 +69,10 @@
             <Solution :solution="solution" v-if="solution.show"></Solution>
         </div>
         <div class="info">
-            <div>Crosswind is {{ crossWindStrength.toFixed(1) }} m/s from {{ crossWindDirection < 0 ? "left to right" : "right to left "}}</div>
-            <div><i>Current zero at {{solution.zeroAt.toFixed(1)}} m for click {{ scopeInfo.currentClick - zeroInfo.click }}</i></div>
-            <div>Pbr: {{ solution.maxpathrange.toFixed(1) }} m - <span v-if="!isNaN(solution.outerpathrange)">{{ solution.outerpathrange.toFixed(1)}} m</span>
-            &mdash; Zone: <span v-if="!isNaN(solution.outerpath)">{{ ((solution.maxpath - solution.outerpath)*1000).toFixed(0)}} mm.</span></div>
+            <div>Crosswind is {{ crossWindStrength.toFixed(1) }} m/s from {{ crossWindDirection > 0 ? "left to right" : "right to left "}}</div>
+            <div><i>Current zero at {{solution.envelope.zeros.far.toFixed(1)}} m for click {{ scopeInfo.currentClick - zeroInfo.click }}</i></div>
+            <div>Pbr: {{ solution.envelope.pbr.near.toFixed(1) }} m - {{solution.envelope.pbr.far.toFixed(1) }} m
+            <span v-if="solution.envelope.maxPoint.y > 0"> &mdash; Zone: {{ ((solution.envelope.maxPoint.y * 2)*1000).toFixed(0)}} mm.</span></div>
         </div>
 
     </div>
@@ -196,11 +198,17 @@ import NumberInput from './NumberInput.vue';
 import StandardModel from './standard-model-wc.js';
 import Scope from './Scope.vue';
 import Vue from 'vue';
- /*
+import PointMassBallisticSolver from './bcd.js';
+
+
+var bcd = new PointMassBallisticSolver();
+
+/*
 var state = {
   source : null,
   initial : { x : 0, y : 0 },
 };
+
 
 
 Vue.directive('rotator', { 
@@ -254,7 +262,7 @@ const Units = {
     FPSprCasMPSprF:      { unit: "m/s / °F", step: 0.01,  precision: 2, a: 0,  b: 0.169333333333333 },
     FPS:                 { unit: "fps",      step: 1,     precision: 0, a: 0,  b: 1                 },
     FPSasMPS:            { unit: "m/s",      step: 0.5,   precision: 1, a: 0,  b: 0.3048            },
-    Meters:              { unit: "m",        step: 5,     precision: 0, a: 0,  b: 1                 },
+    Meters:              { unit: "m",        step: 5,     precision: 0, a: 0,  b: 1                 },    
     MetersAsYards:       { unit: "yd",       step: 5,     precision: 0, a: 0,  b: 1.09361           },
     MetersAsFeet:        { unit: "ft",       step: 1,     precision: 0, a: 0,  b: 3.28084           },
     MPS:                 { unit: "m/s",      step: 0.1,   precision: 1, a: 0,  b: 1                 },
@@ -266,6 +274,9 @@ const Units = {
     NoneInteger:         { unit: "",         step: 1,     precision: 0, a: 0,  b: 1                 },
     Celsius:             { unit: "°C",       step: 0.1,   precision: 1, a: 0,  b: 1                 },
     CelsiusAsFahrenheit: { unit: "°F",       step: 0.1,   precision: 1, a: 32, b: 1.8               },                
+    RADasDegrees:        { unit: "°",        step: 1,     precision: 0, a: 0,  b: 180.0/Math.PI     },
+    RADasClock:          { unit: "o'clock",  step: 1,     precision: 0, a: 0,  b: 6/Math.PI         },
+    RADAsMil:            { unit: "MIL",      step: 1,     precision: 0, a: 0,  b: 3200/Math.PI      },
     Degrees:             { unit: "°",        step: 1,     precision: 0, a: 0,  b: 1                 },
     DegreesAsClock:      { unit: "o'clock",  step: 1,     precision: 0, a: 0,  b: 12/360            },
     DegreesAsMil:        { unit: "MIL",      step: 1,     precision: 0, a: 0,  b: 6400/360          },
@@ -273,6 +284,10 @@ const Units = {
     MRADasCM:            { unit: "cm/100m",  step: 0.10,  precision: 1, a: 0,  b: 10                },
     MRADasIN:            { unit: "in/100yd", step: 0.05,  precision: 2, a: 0,  b: 3.60000009259259  },
     MRADasMOA:           { unit: "MOA",      step: 0.01,  precision: 2, a: 0,  b: 3.43774677078494  },
+    RADasMRAD:           { unit: "mrad",     step: 0.01,  precision: 2, a: 0,  b: 1000              },
+    RADasCM:             { unit: "cm/100m",  step: 0.10,  precision: 1, a: 0,  b: 10000             },
+    RADasIN:             { unit: "in/100yd", step: 0.05,  precision: 2, a: 0,  b: 3600.00009259259  },
+    RADasMOA:            { unit: "MOA",      step: 0.01,  precision: 2, a: 0,  b: 3437.74677078494  },
     HPA:                 { unit: "hPa",      step:1,      precision: 0, a: 0,  b: 1                 },
     HPAasINHG:           { unit: "inHg",     step:0.1,    precision: 1, a: 0,  b: 0.029529983071445 }
 };
@@ -286,7 +301,6 @@ Vue.component('Solution', Solution);
 
 /* eslint key-spacing: 'off' */
 /* eslint no-multi-spaces : 'off' */
-// const localWeather = "http://api.openweathermap.org/data/2.5/weather?units=metric&id=3415496&appid=befec05f975ea0def35e4d528bd0695f"
 const localWeather = "https://vpn.kiesel.is/weather/keflavik.json"
 
 export default {
@@ -301,7 +315,7 @@ export default {
                         title : "KEF Environment at " + new Date(d.dt * 1000).toLocaleTimeString("IS-is"),
                         show : true,
                         windspeed     : d.wind.speed, // ms.
-                        winddirection : d.wind.deg, // degrees
+                        winddirection : d.wind.deg / 180 * Math.PI, // radians
                         temperature   : d.main.temp, // °C
                         pressure      : d.main.pressure,
                         shootdirection: this.environment.shootdirection
@@ -319,75 +333,69 @@ export default {
         bound : function(value, min, max) {
             return Math.max(min, Math.min(value, max));
         },
-        
         solve : function() {
-            var projectile_bc           = this.bound(this.projectile.bc, 0.1, 1.0);
-            var zeroInfo_range          = this.bound(this.zeroInfo.range, 50,1000);
-            var zeroInfo_speed          = this.bound(this.zeroInfo.speed, 500, 5000);
-            var zeroInfo_pressure       = this.bound(this.zeroInfo.pressure,       910.0, 1100.0);
-            var zeroInfo_temperature    = this.bound(this.zeroInfo.temperature,     -30.0, 50.0);
-            var environment_temperature = this.bound(this.environment.temperature,  -30.0, 50.0);
-            var environment_pressure    = this.bound(this.environment.pressure,    910.0, 1100.0);
-            // console.log("Solving...")
-            var  sighting_temperature  = this.sm.celsius_to_fahrenheit(this.zeroInfo.temperature);
-            var  sighting_pressure     = this.sm.hPa_to_inHg(zeroInfo_pressure);
-            var  temperature           = this.sm.celsius_to_fahrenheit(this.environment.temperature);
-            var  air_pressure          = this.sm.hPa_to_inHg(this.environment.pressure);
-            var  bc_at_zero            = this.sm.AtmCorrect(projectile_bc, 0, sighting_pressure, sighting_temperature, 0.5 );
+            var projectile_bc      = this.bound(this.projectile.bc, 0.1, 1.0);
+            var projectile_mass    = this.bound(this.projectile.weight, 1, 1000) / 15432; // grain to kg.
+            var reference          = this.bound(this.scopeInfo.height, 0.0,100) / 1000; // mm to metre.
+            
+            var zeroRange          = this.bound(this.zeroInfo.range, 50, 1000);
+            var zeroSpeed          = this.bound(this.zeroInfo.speed, 500, 5000) / 3.28084; // fps to metre 
+            var zeroPressure       = this.bound(this.zeroInfo.pressure,       910.0, 1100.0);
+            var zeroTemperature    = this.bound(this.zeroInfo.temperature,     -30.0, 50.0);
+            var zeroOffset         = this.zeroInfo.offset / 1000; // mm to metre
+            
+            var envTemperature    = this.bound(this.environment.temperature,  -30.0, 50.0);            
+            var envPressure       = this.bound(this.environment.pressure,       910.0, 1100.0);            
+            var envSpeed          = zeroSpeed + (envTemperature - zeroTemperature)*this.projectile.tempSens;
+            var envWindspeed      = this.bound(this.environment.windspeed,     0.0,  40.0);
+            var envWinddirection  = (this.environment.winddirection - this.environment.shootdirection);
+            var zeroEnvironment    = new bcd.EnvironmentalFactors(zeroTemperature, zeroPressure, 0.5, 0.0, 0.0);
+            var currentEnvironment = new bcd.EnvironmentalFactors(envTemperature, envPressure, 0.5, envWindspeed, envWinddirection);
 
-            this.projectile.adjustedSpeed = zeroInfo_speed + (environment_temperature - zeroInfo_temperature)*this.projectile.tempSens;
-            this.projectile.adjustedBC    = this.sm.AtmCorrect(projectile_bc, 0, air_pressure, temperature, 0.5 );
-            this.zeroInfo.zeroAngle = this.sm.ZeroAngle(
-                bc_at_zero, 
-                zeroInfo_speed, 
-                this.scopeInfo.height / 25.4,  
-                zeroInfo_range / 0.9144, 
-                this.zeroInfo.offset / 25.4
-            );
-            // console.log("zero bc: " + bc_at_zero + " adjustedBC: " + this.projectile.adjustedBC)
-            // console.log("zero speed: " + zeroInfo_speed + " adjustedSpeed:"  + this.projectile.adjustedSpeed)
-            var res = this.sm.SolveAll(
-                this.projectile.adjustedBC,
-                this.projectile.weight,
-                this.projectile.adjustedSpeed,
-                this.scopeInfo.height / 25.4,
-                0.0,
-                this.sm.RadtoDeg((this.scopeInfo.currentClick - this.zeroInfo.click)*this.scopeInfo.verClick / 1000) + this.zeroInfo.zeroAngle,
-                this.environment.windspeed / 0.44704,
-                this.environment.winddirection - this.environment.shootdirection
-            );
-            this.solution.maxpath        = res.maxpath * 0.0254; // in -> m
-            this.solution.maxpathrange   = res.maxpathrange * 0.9144; // yd -> m
-            this.solution.outerpath      = res.outerpath * 0.0254; // in -> m
-            this.solution.outerpathrange = res.outerpathrange * 0.9144; // yd -> m
-            this.solution.zeroAt         = res.zeroat * 0.9144; // yd -> m
-            // console.log(res);
-            var newPath = [];
-            for (var k in this.solution.path) {
-                var r    = this.solution.path[k].x; // meters.
-                var type = this.solution.path[k].u;
-                var oneClick = Math.tan(this.scopeInfo.verClick/1000) * r ;
-                // our path is in metric, so convert from imperial in the standard-model.
-                newPath[k] = {
-                    x : r,
-                    y : res.solutions[r].y, // mm 
-                    c : res.solutions[r].y / oneClick,
-                    z : res.solutions[r].z,
-                    v : res.solutions[r].v, // leave in fps
-                    e : this.projectile.weight * Math.pow(res.solutions[r].v, 2) / 450380.0, // foot lbs as
-                    t : res.solutions[r].t,
-                    u : type
+            let angle =  bcd.getZeroingAngle(zeroRange, zeroOffset, zeroSpeed, projectile_mass, projectile_bc, reference, zeroEnvironment);
+            let scopeClick = this.scopeInfo.verClick; // rad 
+            let clicks = angle / scopeClick;
+            // console.log('-----------------------------------------------------------------')
+            // console.log(`Zero angle is ${(angleMrad).toFixed(2)} mrad or ${clicks.toFixed(1)} clicks`);
+            angle += (this.scopeInfo.currentClick - this.zeroInfo.click) * scopeClick;
+                
+            let range = this.solution.path[this.solution.path.length - 1].x;
+            let trajectory = bcd.getTrajectory(range + 0.1, angle , envSpeed, projectile_mass, projectile_bc, reference, currentEnvironment);
+            let envelope = bcd.getEnvelope(trajectory);
+            let rangeIndex = 0;
+            let newPath = [];
+            for (let i = 1; i < trajectory.length && rangeIndex < this.solution.path.length; i++) {
+                let point = trajectory[i];
+                if (point.x >  this.solution.path[rangeIndex].x) {
+                    var r    = this.solution.path[rangeIndex].x; // meters.
+                    var type = this.solution.path[rangeIndex].u;
+                    var oneClick = Math.tan(this.scopeInfo.verClick) * r ;
+                    // our path is in metric, so convert from imperial in the standard-model.
+                    newPath[rangeIndex] = {
+                        x : r,
+                        y : point.y, // mm 
+                        c : point.y / oneClick,
+                        z : point.w,
+                        v : point.v * 3.28084,  // leave in fps
+                        e : this.projectile.weight * Math.pow(point.v * 3.28084, 2) / 450380.0, // foot lbs 
+                        t : point.t,
+                        u : type
+                    }
+                    let lastPoint = trajectory[i - 1];
+                    let x =  this.solution.path[rangeIndex++].x;
+                    let res = bcd.linearInterpolate(x, lastPoint, point);
                 }
             }
-            Vue.set(this.solution, "path", newPath);
-        }
+            Vue.set(this.solution, 'envelope', envelope);
+            Vue.set(this.solution, 'path',     newPath);
+        },
     }, 
     computed : {
         crossWindStrength: function() {
-            return Math.abs(this.sm.CrossWind(this.environment.windspeed, this.environment.winddirection - this.environment.shootdirection))
+            return Math.abs(bcd.crossWind(this.environment.windspeed, (this.environment.winddirection - this.environment.shootdirection)))
         },
         crossWindDirection: function() {
-            return Math.sign(this.sm.CrossWind(this.environment.windspeed, this.environment.winddirection - this.environment.shootdirection))
+            return Math.sign(bcd.crossWind(this.environment.windspeed, (this.environment.winddirection - this.environment.shootdirection)))
         }
     },
     created : function() {
@@ -412,8 +420,9 @@ export default {
                 offset: [ Units.MM, Units.MMasCM, Units.MMasIN ],
                 scopeClick: [ Units.NoneInteger ],
                 temperature: [ Units.Celsius, Units.CelsiusAsFahrenheit ],
-                direction: [ Units.Degrees, Units.DegreesAsClock, Units.DegreesAsMil ],
-                clickSize: [Units.MRAD, Units.MRADasCM, Units.MRADasIN, Units.MRADasMOA ],
+                //direction: [ Units.Degrees, Units.DegreesAsClock, Units.DegreesAsMil ],
+                direction: [ Units.RADasDegrees, Units.RADasClock, Units.RADasMil ],
+                clickSize: [Units.RADasMRAD, Units.RADasCM, Units.RADasIN, Units.RADasMOA ],
                 pressure: [ Units.HPA, Units.HPAasINHG ],
             },                                                                                                                                                                                                                                                             
             msg: 'Bleh',
@@ -447,8 +456,8 @@ export default {
                 title    : 'Scope setup',
                 show     : false,
                 height   : 44, // mm height above boreline.
-                verClick : 0.07, // mrad
-                horClick : 0.07, // mrad
+                verClick : 0.00007, // rad
+                horClick : 0.00007, // rad
                 clicksPrTurn : 35,
                 currentClick : 0, // current click on the scope.
                 accumulated : 0.0, // accumulated clicks
@@ -460,20 +469,20 @@ export default {
                 title : 'Environmentals',
                 show : false,
                 windspeed     : 3.0, // ms.
-                winddirection : 63, // degrees
+                winddirection : 63/180*Math.PI, // radians
                 temperature   : -1, // °C
                 pressure      : 1017,
-                shootdirection : 180 // degrees
+                shootdirection : 180/180*Math.PI // radians
             },
             // ballistic solution to the zero information.
             solution : {
                 title: 'Solution',
-                show: true,
-                zeroAt: 0,
-                maxpath: 0,
-                maxpathrange: 0,
-                outerpath: 0,
-                outerpathrange: 0,
+                show: true,                
+                envelope: {
+                    maxPoint: { x:0.0, y:0.0, w:0.0, t:0.0 },
+                    pbr: { near:0.0, far:0.0 },
+                    zeros : {near:0.0, far:0.0 }
+                },
                 path: [
                     { x: 100, y: -0.032, c:   -4.6, z: 0.015, v: 2762, t: 0.113, e: 0, u: 'X' },
                     { x: 125, y: -0.032, c:   -5.7, z: 0.015, v: 2762, t: 0.113, e: 0, u: 'z' },

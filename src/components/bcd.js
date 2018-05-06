@@ -267,7 +267,7 @@ export default function () {
     }
     
     function main(ranges) {
-        let range = ranges[ranges.length - 1]; // Distance over which to plot results
+        let range = ranges[ranges.length - 1].x; // Distance over which to plot results
         let muzzleVelocityMps = 932.7; // Metres per second
         let massGrains = 95; // Mass of the bullet in grains
         let bc = 0.19; // G1 ballistic coefficient
@@ -294,9 +294,9 @@ export default function () {
         let rangeIndex = 0;
         for (let i = 1; i < trajectory.length && rangeIndex < ranges.length; i++) {
             let point = trajectory[i];
-            if (point.x > ranges[rangeIndex]) {
+            if (point.x > ranges[rangeIndex].x) {
                 let lastPoint = trajectory[i - 1];
-                let x = ranges[rangeIndex++];
+                let x = ranges[rangeIndex++].x;
                 let res = linearInterpolate(x, lastPoint, point);
                 console.log(`${res.x}\t${res.v.toFixed(1)}\t${(res.y * 1000).toFixed(0)}\t${res.t.toFixed(3)}\t${(res.w * 1000).toFixed(0)}`);
             }
@@ -304,10 +304,13 @@ export default function () {
         console.log(`Highest point reached at ${envelope.maxPoint.x.toFixed(1)} m : ${(envelope.maxPoint.y * 1000).toFixed(1)} mm`);
         console.log(`Point blank range from  ${envelope.pbr.near.toFixed(0)} m to  ${envelope.pbr.far.toFixed(0)} m with a vital zone size of ${(envelope.maxPoint.y * 2000).toFixed(0)} mm`);
     }
+
     this.main = main;
     this.EnvironmentalFactors = EnvironmentalFactors;
     this.getZeroingAngle = getZeroingAngle;
     this.getTrajectory = getTrajectory;
     this.getEnvelope = getEnvelope;
     this.linearInterpolate = linearInterpolate;
+    this.crossWind = crossWind;
+    this.headWind  = headWind;
 }
