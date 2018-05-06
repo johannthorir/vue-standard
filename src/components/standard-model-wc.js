@@ -92,7 +92,7 @@ function StandardModel(maxRange, dragFunction) {
                 { vp: 670, A: 2.04835650496866e-05, M: 2.11688446325998 },
                 { vp: 0, A: 7.50912466084823e-05, M: 1.92031057847052 }
             ],
-            'G7': [
+            'G7': [ // this above 4200 is suspect...
                 { vp: 4200, A: 1.29081656775919e-09, M: 3.24121295355962 },
                 { vp: 3000, A: 0.0171422231434847, M: 1.27907168025204 },
                 { vp: 1470, A: 2.33355948302505e-03, M: 1.52693913274526 },
@@ -155,7 +155,7 @@ function StandardModel(maxRange, dragFunction) {
 
         return DragCoefficient * CD;
     }
-
+    // i.e total time elapsed minus the time it would have taken with no decelation) i.e. total time lost multiplied by the wind speed and some factor.
     function Windage(WindSpeed, Vi, xx, t) { return ((WindSpeed * 17.60) * (t - xx / Vi)); }
     function HeadWind(WindSpeed, WindAngle) { return (Math.cos(DegtoRad(WindAngle)) * WindSpeed); }
     function CrossWind(WindSpeed, WindAngle) { return (Math.sin(DegtoRad(WindAngle)) * WindSpeed); }
@@ -177,7 +177,7 @@ function StandardModel(maxRange, dragFunction) {
     }
 
     function FindZero(DragCoefficient, Weight, Vi, SightHeight, ShootingAngle, ZAngle, WindSpeed, WindAngle) {
-        let dt = 0.25 / Vi;
+        let dt = 0.5 / Vi;
 
         let headwind = HeadWind(WindSpeed, WindAngle);
         // var crosswind = CrossWind(WindSpeed, WindAngle);
@@ -196,7 +196,7 @@ function StandardModel(maxRange, dragFunction) {
             let vy1 = vy;
 
             let v = Math.pow(Math.pow(vx, 2) + Math.pow(vy, 2), 0.5);
-            dt = 0.25 / v;
+            dt = 0.5 / v;
 
             let dv = drag(v + headwind) / DragCoefficient;
             let dvx = -(vx / v) * dv + Gx;
@@ -250,13 +250,13 @@ function StandardModel(maxRange, dragFunction) {
         let n = 0;
         let m = 0;
         let drag = DF(dragFunction);
-        let zzz = 0;
+
         for(let t = 0; ;t = t + dt) {
             let vx1 = vx;
             let vy1 = vy;
 
             let v = Math.pow(Math.pow(vx, 2) + Math.pow(vy, 2), 0.5);
-            dt = 0.25 / v;
+            dt = 0.5 / v;
 
             let dv = drag(v + headwind) / DragCoefficient;
             let dvx = -(vx / v) * dv + Gx;
@@ -268,6 +268,7 @@ function StandardModel(maxRange, dragFunction) {
             let meters = x / 3.280839895;
             let path = y * 12; // in inches
             if(meters >= n) {
+                // console.log(`${v}\t${dv}`)
                 let solution = {};
                 solution.range = x / 3; // Range in yds ( 3 ft pr yard)
                 solution.path = path; // Path in inches
@@ -320,15 +321,14 @@ function StandardModel(maxRange, dragFunction) {
 
             if(Math.abs(vy) > Math.abs(3 * vx)) break;
             if(n > maxRange) break;
-            zzz++;
         }
-       //  console.log(zzz.toString() + ' datapoints');
+        //  console.log(zzz.toString() + ' datapoints');
         return result;
     }
 
     // angle in radians
     function DropAtZeroAngled(DragCoefficient, Vi, SightHeight, ZeroRange, Angle) {
-        let dt = 0.25 / Vi;
+        let dt = 0.5 / Vi;
 
         let Gy = GRAVITY * Math.cos(Angle);
         let Gx = GRAVITY * Math.sin(Angle);
@@ -345,7 +345,7 @@ function StandardModel(maxRange, dragFunction) {
             let vy1 = vy;
             let vx1 = vx;
             let v = Math.pow((Math.pow(vx, 2) + Math.pow(vy, 2)), 0.5);
-            dt = 0.25 / v;
+            dt = 0.5 / v;
 
             let dv = drag(v) / DragCoefficient;
             let dvy = -dv * vy / v;
@@ -364,7 +364,7 @@ function StandardModel(maxRange, dragFunction) {
     // note that this is inaccurate for very slow bullets or extreme ranges, but
     // good enough for hunting distances by normal humans using normal ammunition.
     function DropAtZero(DragCoefficient, Vi, SightHeight, ZeroRange) {
-        let dt = 0.25 / Vi;
+        let dt = 0.5 / Vi;
         let Angle = 0.0; // pointed level
         let Gy = GRAVITY * Math.cos(Angle);
         let Gx = GRAVITY * Math.sin(Angle);
@@ -380,7 +380,7 @@ function StandardModel(maxRange, dragFunction) {
             let vx1 = vx;
             let vy1 = vy;
             let v = Math.pow(Math.pow(vx, 2) + Math.pow(vy, 2), 0.5);
-            dt = 0.25 / v;
+            dt = 0.5 / v;
 
             let dv = drag(v) / DragCoefficient;
             let dvy = -dv * vy / v;
