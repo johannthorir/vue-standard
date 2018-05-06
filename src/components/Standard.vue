@@ -69,7 +69,7 @@
             <Solution :solution="solution" v-if="solution.show"></Solution>
         </div>
         <div class="info">
-            <div>Crosswind is {{ crossWindStrength.toFixed(1) }} m/s from {{ crossWindDirection > 0 ? "left to right" : "right to left "}}</div>
+            <div>Crosswind is {{ crossWindStrength.toFixed(1) }} m/s from {{ crossWindDirection < 0 ? "left to right" : "right to left "}}</div>
             <div><i>Current zero at {{solution.envelope.zeros.far.toFixed(1)}} m for click {{ scopeInfo.currentClick - zeroInfo.click }}</i></div>
             <div>Pbr: {{ solution.envelope.pbr.near.toFixed(1) }} m - {{solution.envelope.pbr.far.toFixed(1) }} m
             <span v-if="solution.envelope.maxPoint.y > 0"> &mdash; Zone: {{ ((solution.envelope.maxPoint.y * 2)*1000).toFixed(0)}} mm.</span></div>
