@@ -1,8 +1,5 @@
-/* eslint key-spacing: 'off' */
-/* eslint no-multi-spaces : 'off' */
 /* eslint-disable */ 
 /*
-
     Note that this library uses metric units, mostly SI with some exceptions.
 
     all lengthss are in metres
@@ -11,7 +8,7 @@
     velocities are in metres pr. second.
 
     vertical lengths are positive up, negative down.
-
+    bullet weights are in grains... 
 */
 export default function () {
     // Some physical and converion constants.
@@ -70,59 +67,69 @@ export default function () {
         [3.9, 0.501, -0.004], [4, 0.5006, -0.004], [4.2, 0.4998, -0.0015], [4.4, 0.4995, -0.0015],
         [4.6, 0.4992, -0.001], [4.8, 0.499, -0.001], [5, 0.4988, -0.001]
     ];
+
     //! Environmental factors.
     //!   @param temperature - the ambient temperature in Celsius.
     //!   @param pressure    - local barometric pressure in hPa.
     //!   @param humidity    - relative humidity [0..1]
-    //! Also calculates the air density in kg / m³ and the speed of sound in m/s.
+    //!   @param windSpeed   - wind speed in m/s
+    //!   @param windAngle   - wind angle from north in radians.
+    //! Calculates the air density in kg / m³ and the speed of sound in m/s.
     //! These are available as members rho and mach1 respectively.
-    function EnvironmentalFactors(temperature, pressure, humidity, windSpeed, windAngle) {
-        this.temperature = temperature;
-        this.pressure = pressure;
-        this.humidity = humidity;
-        this.windSpeed = windSpeed;
-        this.windAngle = windAngle;
-        this.headWind = Math.cos(windAngle) * windSpeed;
-        this.crossWind = Math.sin(windAngle) * windSpeed;
-        const Kelvin = 273.15;
-        let T = temperature;
-        let TKel = Kelvin + T;
-        let p = pressure * 100; // in Pascals
-        const Md = 0.028964; // molar mass of dry air, kg/mol
-        const Mv = 0.018016; // molar mass of water vapor kg/mol
-        const R = 8.314; // universal gas constant J/(K Mol)
-        // const Rv = 461.495;  // specific gas constant for water vapor J/(kg * K)
-        // const Rd = 287.058;  // specific gas constant for dry air J(kg*K)
-        let psat = 6107.8 * Math.exp(7.27 * T / TKel);
-        let pv = humidity * psat;
-        let pd = (p - pv);
-        this.rho = (pd * Md + pv * Mv) / (R * TKel);
-        let ENH = 3.141593e-8 * p + 1.00062 + T * T * 5.6e-7;
-        let PSV1 = TKel * (TKel * 0.000012378847 - 0.019121316);
-        let PSV2 = 33.93711047 - 6343.1645 / TKel;
-        let PSV = Math.exp(PSV1) * Math.exp(PSV2);
-        let Xw = humidity * ENH * PSV / p;
-        let Xc = 400 * Math.pow(10, -6);
-        let C1 = 331.5024 + (0.603055 - 0.000528 * T) * T + (51.471935 + (0.1495874 - 0.000782 * T) * T) * Xw;
-        let C2 = (-1.82e-7 + (3.73e-8 - 2.93e-10 * T) * T) * p + (-85.20931 + (-0.228525 + 0.0000591 * T) * T) * Xc;
-        let C3 = Xw * Xw * 2.835149 + p * p * 2.15e-13 - Xc * Xc * 29.179762 - 0.000486 * Xw * p * Xc;
-        this.mach1 = C1 + C2 - C3;
+    //! The wind is broken down into headWind and crossWind.
+    class EnvironmentalFactors {
+        constructor(temperature, pressure, humidity, windSpeed, windAngle) {
+            this.temperature = temperature;
+            this.pressure = pressure;
+            this.humidity = humidity;
+            this.windSpeed = windSpeed;
+            this.windAngle = windAngle;
+            this.headWind = Math.cos(windAngle) * windSpeed;
+            this.crossWind = Math.sin(windAngle) * windSpeed;
+            const Kelvin = 273.15;
+            let T = temperature;
+            let TKel = Kelvin + T;
+            let p = pressure * 100; // in Pascals
+            const Md = 0.028964; // molar mass of dry air, kg/mol
+            const Mv = 0.018016; // molar mass of water vapor kg/mol
+            const R = 8.314; // universal gas constant J/(K Mol)
+            // const Rv = 461.495;  // specific gas constant for water vapor J/(kg * K)
+            // const Rd = 287.058;  // specific gas constant for dry air J(kg*K)
+            let psat = 6107.8 * Math.exp(7.27 * T / TKel);
+            let pv = humidity * psat;
+            let pd = (p - pv);
+            this.rho = (pd * Md + pv * Mv) / (R * TKel);
+            let ENH = 3.141593e-8 * p + 1.00062 + T * T * 5.6e-7;
+            let PSV1 = TKel * (TKel * 0.000012378847 - 0.019121316);
+            let PSV2 = 33.93711047 - 6343.1645 / TKel;
+            let PSV = Math.exp(PSV1) * Math.exp(PSV2);
+            let Xw = humidity * ENH * PSV / p;
+            let Xc = 400 * Math.pow(10, -6);
+            let C1 = 331.5024 + (0.603055 - 0.000528 * T) * T + (51.471935 + (0.1495874 - 0.000782 * T) * T) * Xw;
+            let C2 = (-1.82e-7 + (3.73e-8 - 2.93e-10 * T) * T) * p + (-85.20931 + (-0.228525 + 0.0000591 * T) * T) * Xc;
+            let C3 = Xw * Xw * 2.835149 + p * p * 2.15e-13 - Xc * Xc * 29.179762 - 0.000486 * Xw * p * Xc;
+            this.mach1 = C1 + C2 - C3;
+        }
     }
+
     //! positive is in our backs.
     function headWind(speed, angle) {
         return (Math.cos(angle) * speed);
     }
+
     //! positive is from right to left.
     function crossWind(speed, angle) {
         return (Math.sin(angle) * speed);
     }
+
     //! Calculate the zero crossing given that sign(y0) != sign(y1).
     //! Linear interpolation for y = 0 on the line segment from (x0,y0) to (x1,y1)
     function getZeroCrossingLinear(x0, y0, x1, y1) {
         return x0 - y0 * (x1 - x0) / (y1 - y0);
     }
+
     //! Drag coefficient function
-    //!  @param mach - the mach number
+    //!   @param mach - the mach number
     //! @returns the drag coefficient in the current system corresponding to the given mach number.
     function getCD(mach) {
         let CDTable = CD_G7;
@@ -140,18 +147,19 @@ export default function () {
         }
         return CDTable[iBelow][1] + CDTable[iBelow][2] * (mach - CDTable[iBelow][0]);
     }
+    
     //! Calculate the ballistic trajectory of a projectile.
-    //!  @param range       - maximum range to calculate (in metres)
-    //!  @param angle       - the launch angle relative to horizontal, positive up (in radians).
-    //!  @param velocity    - initial velocity in metres / second.
-    //!  @param mass        - mass of the projectile in kilogrammes.
-    //!  @param bc          - the ballistic coefficient of the projectile in the selected system.
-    //!  @param reference   - the height of the horizontal reference.
-    //!  @param environment - the environmental factors to consider.
-    //! The trajectory will be computed by numerical differentiantion with variable time delta
-    //! which will give trajectory point spaced approximately every STEP metres.
+    //!   @param range       - maximum range to calculate (in metres)
+    //!   @param angle       - the launch angle relative to horizontal, positive up (in radians).
+    //!   @param velocity    - initial velocity in metres / second.
+    //!   @param mass        - mass of the projectile in kilogrammes.
+    //!   @param bc          - the ballistic coefficient of the projectile in the selected system.
+    //!   @param reference   - the height of the horizontal reference.
+    //!   @param environment - the environmental factors to consider.
+    //! The trajectory will be computed with variable time delta which will give trajectory
+    //! points spaced approximately every STEP metres.
     //! @returns an array of point objects representing the trajectory containing x-value y-value,
-    //! velocity, time and normalized windage (1m/s perpendicular).
+    //! velocity, time and windage.
     function getTrajectory(range, angle, velocity, mass, bc, reference, environment) {
         let points = [];
         let v_x = velocity * Math.cos(angle);
@@ -192,18 +200,7 @@ export default function () {
         }
         return points;
     }
-    //! Find the actual zero distance of the given trajectory.
-    //! Locates the far horizontal crossing the trajectory.
-    //!   @param trajectory - the trajectory as computed by getTrajectory()
-    //! @returns the zero distance or 0.0 if the trajectory doesn't intersect the horizontal reference.
-    function getZeroDistance(trajectory) {
-        for (let i = 0; i < trajectory.length - 2; i++) {
-            if (trajectory[i].y >= 0 && trajectory[i + 1].y < 0) {
-                return getZeroCrossingLinear(trajectory[i].x, trajectory[i].y, trajectory[i + 1].x, trajectory[i + 1].y);
-            }
-        }
-        return 0; // no zero-crossing.
-    }
+
     //! Find the near and far intersections of the trajectory with a horizontal reference with an offset.
     function getCrossings(trajectory, offset) {
         let crossings = { near: 0, far: 0 };
@@ -218,6 +215,7 @@ export default function () {
         }
         return crossings;
     }
+
     //! interpolate linearly from first to second returning the solution at the given range.
     function linearInterpolate(x, first, second) {
         let diff = (x - first.x) / (second.x - first.x);
@@ -229,6 +227,7 @@ export default function () {
             w: diff * (second.w - first.w) + first.w
         };
     }
+
     //! Calculate the angle to use to hit the offset at the given range.
     //! The angle is calculated with the riflemans rule from the ballistic trajectory with initial zero angle.
     //!   @param range       - the zero range in metres.
@@ -243,6 +242,7 @@ export default function () {
         let path = getTrajectory(range, 0, velocity, mass, bc, reference, environment);
         return Math.atan2(-path[path.length - 1].y + offset, path[path.length - 1].x);
     }
+
     //! todo - add vertical angle (shooting angle).
     function getEnvelope(trajectory) {
         let maxIndex = 0;
@@ -256,6 +256,7 @@ export default function () {
             zeros: getCrossings(trajectory, 0)
         };
     }
+
     // finds a quadratic passing through the points and solves for zero first derivative.
     function findZeroDerivative(p0, p1, p2) {
         let A = ((p0.y - p2.y) * (p1.x - p2.x) - (p1.y - p2.y) * (p0.x - p2.x)) / ((p0.x * p0.x - p2.x * p2.x) * (p1.x - p2.x) - (p1.x * p1.x - p2.x * p2.x) * (p0.x - p2.x));
@@ -266,46 +267,6 @@ export default function () {
         return { x: x, y: y };
     }
     
-    function main(ranges) {
-        let range = ranges[ranges.length - 1].x; // Distance over which to plot results
-        let muzzleVelocityMps = 932.7; // Metres per second
-        let massGrains = 95; // Mass of the bullet in grains
-        let bc = 0.19; // G1 ballistic coefficient
-        let sightHeightM = 0.044; // Height of the sight above the muzzle
-        let zeroRange = 100; // m
-        let zeroImpact = -0.032; // m
-        let massKg = massGrains / GRAINS_PER_KG;
-        let temperature = -1; // °C
-        let pressure = 1017; // hPa
-        let humidity = 0.5; // yeah... well
-        let windSpeed = 0;
-        let windAngle = Math.PI / 2; //
-        let env = new EnvironmentalFactors(temperature, pressure, humidity, windSpeed, windAngle);
-        let angle = getZeroingAngle(zeroRange, zeroImpact, muzzleVelocityMps, massKg, bc, sightHeightM, env);
-        let angleMrad = angle * 1000;
-        let clicks = angleMrad / 0.07;
-        console.log(`Zero angle is ${(angleMrad).toFixed(2)} mrad or ${clicks.toFixed(1)} clicks`);
-        let trajectory = getTrajectory(range + 1, angle + 16 * 0.07 / 1000, muzzleVelocityMps, massKg, bc, sightHeightM, env);
-        let envelope = getEnvelope(trajectory);
-        // console.log("actual zero distance " + actualZero.toFixed(3))
-        console.log(`near zero: ${envelope.zeros.near.toFixed(3)} m , far zero: ${envelope.zeros.far.toFixed(3)} m`);
-        console.log(' x \t vel \t  y\t  t\twind\n');
-        console.log(' Total number of points calculated:' + trajectory.length);
-        let rangeIndex = 0;
-        for (let i = 1; i < trajectory.length && rangeIndex < ranges.length; i++) {
-            let point = trajectory[i];
-            if (point.x > ranges[rangeIndex].x) {
-                let lastPoint = trajectory[i - 1];
-                let x = ranges[rangeIndex++].x;
-                let res = linearInterpolate(x, lastPoint, point);
-                console.log(`${res.x}\t${res.v.toFixed(1)}\t${(res.y * 1000).toFixed(0)}\t${res.t.toFixed(3)}\t${(res.w * 1000).toFixed(0)}`);
-            }
-        }
-        console.log(`Highest point reached at ${envelope.maxPoint.x.toFixed(1)} m : ${(envelope.maxPoint.y * 1000).toFixed(1)} mm`);
-        console.log(`Point blank range from  ${envelope.pbr.near.toFixed(0)} m to  ${envelope.pbr.far.toFixed(0)} m with a vital zone size of ${(envelope.maxPoint.y * 2000).toFixed(0)} mm`);
-    }
-
-    this.main = main;
     this.EnvironmentalFactors = EnvironmentalFactors;
     this.getZeroingAngle = getZeroingAngle;
     this.getTrajectory = getTrajectory;
