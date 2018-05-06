@@ -190,6 +190,7 @@ export default function () {
                 y: s_y,
                 v: v,
                 t: t,
+                e: 0.5 * mass * v * v,
                 w: environment.crossWind * (t - s_x / velocity)
             });
             s_x += (v_x + dv_x / 2) * dt;

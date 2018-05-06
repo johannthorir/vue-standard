@@ -372,13 +372,13 @@ export default {
                     var oneClick = Math.tan(this.scopeInfo.verClick) * r ;
                     // our path is in metric, so convert from imperial in the standard-model.
                     newPath[rangeIndex] = {
-                        x : r,
-                        y : point.y, // mm 
-                        c : point.y / oneClick,
-                        z : point.w,
+                        x : r,       // m
+                        y : point.y, // m 
+                        c : point.y / oneClick, // clicks
+                        z : point.w, // m
                         v : point.v * 3.28084,  // leave in fps
-                        e : this.projectile.weight * Math.pow(point.v * 3.28084, 2) / 450380.0, // foot lbs 
-                        t : point.t,
+                        e : point.e, // J this.projectile.weight * Math.pow(point.v * 3.28084, 2) / 450380.0, // foot lbs 
+                        t : point.t, // s
                         u : type
                     }
                     let lastPoint = trajectory[i - 1];
