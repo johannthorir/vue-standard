@@ -1,4 +1,5 @@
-
+/* eslint key-spacing: 'off' */
+/* eslint no-multi-spaces : 'off' */
 
 /*
 
@@ -14,7 +15,6 @@
 */
 
 function PointMassBallisticSolver() {
-
     // Some physical and converion constants.
     const POUNDS_PER_KG    = 2.20462;
     const INCHES_PER_METRE = 39.3701;
@@ -104,7 +104,6 @@ function PointMassBallisticSolver() {
 
         let pv = humidity * psat;
         let pd = (p - pv);
-
 
         this.rho = (pd * Md + pv * Mv) / (R * TKel);
 
