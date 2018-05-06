@@ -184,7 +184,6 @@ export default function () {
             let a_y = -F_y / mass - GRAVITY; // gravity goes down
             let dv_x = a_x * dt;
             let dv_y = a_y * dt;
-            // windage is normalized for 1 m/s perpendicular - note that we are not calculating vertical offset due to the windage.
             points.push({
                 x: s_x,
                 y: s_y,
