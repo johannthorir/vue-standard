@@ -41,7 +41,7 @@
         <div class="s">
             <h3 v-on:click="zeroInfo.show = !zeroInfo.show" v-bind:class="{ active : zeroInfo.show }">{{zeroInfo.title}}</h3>
             <div class="inputs" v-show="zeroInfo.show">
-                <number-input v-model.number="zeroInfo.speed"       name="Speed"       :units="units.fps"          @input="refresh()"></number-input>
+                <number-input v-model.number="zeroInfo.speed"       name="Speed"       :units="units.velocity"     @input="refresh()"></number-input>
                 <number-input v-model.number="zeroInfo.range"       name="Range"       :units="units.range"        @input="refresh()"></number-input>
                 <number-input v-model.number="zeroInfo.offset"      name="Offset"      :units="units.offset"       @input="refresh()"></number-input>
                 <number-input v-model.number="zeroInfo.click"       name="Click"       :units="units.scopeClick"   @input="refresh()"></number-input>
@@ -253,14 +253,15 @@ Vue.directive('rotator', {
 
 // units:
 const Units = {
-    Grain:               { unit: "gr",       step: 1,     precision: 0, a: 0,  b: 1                 },
-    GrainAsGram:         { unit: "g",        step: 0.05,  precision: 2, a: 0,  b: 0.0647989         },
+    KGasGrain:           { unit: "gr",       step: 1,     precision: 0, a: 0,  b: 15432.4           },
+    KGasGram:            { unit: "g",        step: 0.05,  precision: 2, a: 0,  b: 1000              },
     NoneSmall:           { unit: "",         step: 0.001, precision: 3, a: 0,  b: 1                 },
-    FPSprC:              { unit: "fps/°C",   step: 0.1,   precision: 1, a: 0,  b: 1                 },
-    FPSprCasFPSprF:      { unit: "fps/°F",   step: 0.1,   precision: 1, a: 0,  b: 0.555555555555556 },
-    FPSprCasMPSprC:      { unit: "m/s / °C", step: 0.01,  precision: 2, a: 0,  b: 0.3048            },
-    FPSprCasMPSprF:      { unit: "m/s / °F", step: 0.01,  precision: 2, a: 0,  b: 0.169333333333333 },
-    FPS:                 { unit: "fps",      step: 1,     precision: 0, a: 0,  b: 1                 },
+
+    MPSprC:              { unit: "m/s / °C", step: 0.01,  precision: 2, a: 0,  b: 1                 },
+    MPSprCasFPSprF:      { unit: "fps / °F", step: 0.1,   precision: 1, a: 0,  b: 1.82268888888889  }, 
+    MPSprCasFPSprC:      { unit: "fps/°C",   step: 0.1,   precision: 1, a: 0,  b: 3.28084           },
+    MPSprCasMPSprF:      { unit: "m/s / °F", step: 0.01,  precision: 2, a: 0,  b:0.555555555555556  },
+    MPSasFPS:            { unit: "fps",      step: 1,     precision: 0, a: 0,  b: 3.28084           },
     FPSasMPS:            { unit: "m/s",      step: 0.5,   precision: 1, a: 0,  b: 0.3048            },
     Meters:              { unit: "m",        step: 5,     precision: 0, a: 0,  b: 1                 },    
     MetersAsYards:       { unit: "yd",       step: 5,     precision: 0, a: 0,  b: 1.09361           },
@@ -335,20 +336,20 @@ export default {
         },
         solve : function() {
             var projectile_bc      = this.bound(this.projectile.bc, 0.1, 1.0);
-            var projectile_mass    = this.bound(this.projectile.weight, 1, 1000) / 15432; // grain to kg.
+            var projectile_mass    = this.bound(this.projectile.weight, 0.001, 1); // kg.
             var reference          = this.bound(this.scopeInfo.height, 0.0,100) / 1000; // mm to metre.
             
             var zeroRange          = this.bound(this.zeroInfo.range, 50, 1000);
-            var zeroSpeed          = this.bound(this.zeroInfo.speed, 500, 5000) / 3.28084; // fps to metre 
+            var zeroSpeed          = this.bound(this.zeroInfo.speed, 500, 5000); 
             var zeroPressure       = this.bound(this.zeroInfo.pressure,       910.0, 1100.0);
             var zeroTemperature    = this.bound(this.zeroInfo.temperature,     -30.0, 50.0);
             var zeroOffset         = this.zeroInfo.offset / 1000; // mm to metre
             
-            var envTemperature    = this.bound(this.environment.temperature,  -30.0, 50.0);            
-            var envPressure       = this.bound(this.environment.pressure,       910.0, 1100.0);            
-            var envSpeed          = zeroSpeed + (envTemperature - zeroTemperature)*this.projectile.tempSens;
-            var envWindspeed      = this.bound(this.environment.windspeed,     0.0,  40.0);
-            var envWinddirection  = (this.environment.winddirection - this.environment.shootdirection);
+            var envTemperature     = this.bound(this.environment.temperature,  -30.0, 50.0);            
+            var envPressure        = this.bound(this.environment.pressure,       910.0, 1100.0);            
+            var envSpeed           = zeroSpeed + (envTemperature - zeroTemperature)*this.projectile.tempSens;
+            var envWindspeed       = this.bound(this.environment.windspeed,     0.0,  40.0);
+            var envWinddirection   = (this.environment.winddirection - this.environment.shootdirection);
             var zeroEnvironment    = new bcd.EnvironmentalFactors(zeroTemperature, zeroPressure, 0.5, 0.0, 0.0);
             var currentEnvironment = new bcd.EnvironmentalFactors(envTemperature, envPressure, 0.5, envWindspeed, envWinddirection);
 
@@ -411,16 +412,15 @@ export default {
                 environment: { windspeed: 0, winddirection: 0,temperature: 0,pressure: 0,shootdirection: 0 }
             }, */
             units : {
-                bulletWeight :  [ Units.Grain, Units.GrainAsGram ],
+                bulletWeight :  [ Units.KGasGrain, Units.KGasGram ],
                 ballisticCoefficient: [ Units.NoneSmall ],
-                tempSens: [ Units.FPSprC, Units.FPSprCasFPSprF, Units.FPSprCasMPSprC, Units.FPSprCasMPSprF ],
-                fps:  [ Units.FPS, Units.FPSasMPS ],
+                tempSens: [ Units.MPSprC, Units.MPSprCasFPSprF, Units.MPSprCasFPSprC, Units.MPSprCasMPSprF ], 
+                velocity:  [ Units.MPSasFPS, Units.MPS ],
                 range: [ Units.Meters, Units.MetersAsYards, Units.MetersAsFeet ],
                 speed: [ Units.MPS, Units.MPSasKM, Units.MPSasMPH ],
                 offset: [ Units.MM, Units.MMasCM, Units.MMasIN ],
                 scopeClick: [ Units.NoneInteger ],
                 temperature: [ Units.Celsius, Units.CelsiusAsFahrenheit ],
-                //direction: [ Units.Degrees, Units.DegreesAsClock, Units.DegreesAsMil ],
                 direction: [ Units.RADasDegrees, Units.RADasClock, Units.RADasMil ],
                 clickSize: [Units.RADasMRAD, Units.RADasCM, Units.RADasIN, Units.RADasMOA ],
                 pressure: [ Units.HPA, Units.HPAasINHG ],
@@ -432,17 +432,17 @@ export default {
                 title         : 'Projectile',
                 show          : false,
                 name          : 'Nosler BT 95',
-                weight        : 95,   // grain.
+                weight        : 0.006155, 
                 // bc            : 0.379,    // G1 ballistic coefficient.
                 bc : 0.190, // G7 ballistics coefficent
-                tempSens      : 3.1,  // fps pr degree Celsius.
+                tempSens      : 0.94,  // m/s pr degree Celsius.
                 adjustedSpeed : 3000,
                 adjustedBC    : 0.379
             },
             zeroInfo  : {
                 title       : 'Zeroing conditions',
                 show        : false,
-                speed       : 3060, // fps at the muzzle
+                speed       : 932.7, // m/s at the muzzle
                 range       : 100,  // m horizontal
                 offset      :  -32,   // mm impact offset from point of aim - negative is below, positive is above.
                 click       :  0,   // click setting of scope when zeroing
@@ -484,6 +484,10 @@ export default {
                     zeros : {near:0.0, far:0.0 }
                 },
                 path: [
+                    { x:   0, y: -0.032, c:   -4.6, z: 0.015, v: 2762, t: 0.113, e: 0, u: 'X' },
+                    { x:  25, y: -0.032, c:   -5.7, z: 0.015, v: 2762, t: 0.113, e: 0, u: 'z' },
+                    { x:  50, y: -0.077, c:   -7.3, z: 0.034, v: 2628, t: 0.174, e: 0, u: 'o' },
+                    { x:  75, y: -0.160, c:   -9.2, z: 0.061, v: 2501, t: 0.238, e: 0, u: 'z' },
                     { x: 100, y: -0.032, c:   -4.6, z: 0.015, v: 2762, t: 0.113, e: 0, u: 'X' },
                     { x: 125, y: -0.032, c:   -5.7, z: 0.015, v: 2762, t: 0.113, e: 0, u: 'z' },
                     { x: 150, y: -0.077, c:   -7.3, z: 0.034, v: 2628, t: 0.174, e: 0, u: 'o' },
@@ -501,7 +505,7 @@ export default {
                     { x: 450, y: -1.305, c:  -42.1, z: 0.342, v: 1949, t: 0.610, e: 0, u: 'o' },
                     { x: 475, y: -1.719, c:  -46.1, z: 0.431, v: 1853, t: 0.697, e: 0, u: 'z' },
                     { x: 500, y: -1.719, c:  -50.2, z: 0.431, v: 1853, t: 0.697, e: 0, u: 'X' },
-                    { x: 860, y: -4.000, c: -137.3, z: 1.000, v: 1000, t: 1.200, e: 0, u: 'o' }
+                   
                 ]
             }
         }
