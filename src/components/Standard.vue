@@ -195,10 +195,9 @@ div.info {
 <script>
 import Solution from './Solution.vue';
 import NumberInput from './NumberInput.vue';
-import StandardModel from './standard-model-wc.js';
 import Scope from './Scope.vue';
 import Vue from 'vue';
-import PointMassBallisticSolver from './point-mass-ballistic-solver.js';
+import PointMassBallisticSolver from '../lib/point-mass-ballistic-solver.js';
 
 
 var bcd = new PointMassBallisticSolver();
@@ -396,7 +395,8 @@ export default {
             return Math.sign(bcd.crossWind(this.environment.windspeed, (this.environment.winddirection - this.environment.shootdirection)))
         }
     },
-    created : function() {
+    created : function() {  
+        console.log(this.$store);
         this.solve();
     },
     data : function () {
@@ -422,8 +422,7 @@ export default {
                 clickSize: [Units.RADasMRAD, Units.RADasCM, Units.RADasIN, Units.RADasMOA ],
                 pressure: [ Units.HPA, Units.HPAasINHG ],
             },                                                                                                                                                                                                                                                             
-            msg: 'Bleh',
-            sm: new StandardModel(1000, 'G7'),
+            msg: 'Bleh',            
             showScopeAdjust : true,
             projectile : {
                 title         : 'Projectile',
