@@ -224,6 +224,7 @@ export default function () {
             v: diff * (second.v - first.v) + first.v,
             y: diff * (second.y - first.y) + first.y,
             t: diff * (second.t - first.t) + first.t,
+            e: diff * (second.e - first.e) + first.e,
             w: diff * (second.w - first.w) + first.w
         };
     }

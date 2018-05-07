@@ -365,26 +365,23 @@ export default {
             let envelope = bcd.getEnvelope(trajectory);
             let rangeIndex = 0;
             let newPath = [];
+            let tclick = Math.tan(this.scopeInfo.verClick);
             for (let i = 1; i < trajectory.length && rangeIndex < this.solution.path.length; i++) {
                 let point = trajectory[i];
                 if (point.x >  this.solution.path[rangeIndex].x) {
-                    var r    = this.solution.path[rangeIndex].x; // meters.
-                    var type = this.solution.path[rangeIndex].u;
-                    var oneClick = Math.tan(this.scopeInfo.verClick) * r ;
-                    // our path is in metric, so convert from imperial in the standard-model.
+                    let x  = this.solution.path[rangeIndex].x; 
+                    let res = bcd.linearInterpolate(x, trajectory[i - 1], point);
                     newPath[rangeIndex] = {
-                        x : r,       // m
-                        y : point.y, // m 
-                        c : point.y / oneClick, // clicks
-                        z : point.w, // m
-                        v : point.v * 3.28084,  // leave in fps
-                        e : point.e, // J this.projectile.weight * Math.pow(point.v * 3.28084, 2) / 450380.0, // foot lbs 
-                        t : point.t, // s
-                        u : type
-                    }
-                    let lastPoint = trajectory[i - 1];
-                    let x =  this.solution.path[rangeIndex++].x;
-                    let res = bcd.linearInterpolate(x, lastPoint, point);
+                        x : x,       // m
+                        y : res.y, // m 
+                        c : res.y / (tclick * x), // clicks
+                        z : res.w, // m
+                        v : res.v, 
+                        e : res.e, // J this.projectile.weight * Math.pow(point.v * 3.28084, 2) / 450380.0, // foot lbs 
+                        t : res.t, // s
+                        u : this.solution.path[rangeIndex].u
+                    };
+                    rangeIndex++;
                 }
             }
             Vue.set(this.solution, 'envelope', envelope);
@@ -484,7 +481,6 @@ export default {
                     zeros : {near:0.0, far:0.0 }
                 },
                 path: [
-                    { x:   0, y: -0.032, c:   -4.6, z: 0.015, v: 2762, t: 0.113, e: 0, u: 'X' },
                     { x:  25, y: -0.032, c:   -5.7, z: 0.015, v: 2762, t: 0.113, e: 0, u: 'z' },
                     { x:  50, y: -0.077, c:   -7.3, z: 0.034, v: 2628, t: 0.174, e: 0, u: 'o' },
                     { x:  75, y: -0.160, c:   -9.2, z: 0.061, v: 2501, t: 0.238, e: 0, u: 'z' },

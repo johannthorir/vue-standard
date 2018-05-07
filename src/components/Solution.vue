@@ -4,7 +4,7 @@
         <tr><th>m</th>     <th>fps</th><th>mm</th>    <th></th>       <th>mm</th>    <th>ms</th> <th>Joule</th> </tr>
         <tr v-for="p in solution.path"  :class="p.u">
             <td>{{ p.x }}</td>
-            <td>{{ p.v.toFixed(0) }}</td>
+            <td>{{ (p.v  * 3.28084).toFixed(0) }}</td>
             <td>{{ (p.y * 1000).toFixed(0) }}</td>
             <td>{{ (-p.c).toFixed(1)  }}</td>
             <td>{{ (p.z * 1000).toFixed(0) }}</td>
