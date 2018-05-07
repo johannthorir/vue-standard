@@ -1,3 +1,5 @@
+'use strict';
+
 /* eslint-disable */ 
 /*
     Note that this library uses metric units, mostly SI with some exceptions.
@@ -10,6 +12,7 @@
     vertical lengths are positive up, negative down.
     bullet weights are in grains... 
 */
+
 export default function () {
     // Some physical and converion constants.
     const POUNDS_PER_KG = 2.20462;

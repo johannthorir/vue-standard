@@ -197,7 +197,7 @@ import Solution from './Solution.vue';
 import NumberInput from './NumberInput.vue';
 import Scope from './Scope.vue';
 import Vue from 'vue';
-import PointMassBallisticSolver from '../lib/point-mass-ballistic-solver.js';
+import PointMassBallisticSolver from '../lib/point-mass-ballistic-solver';
 
 
 var bcd = new PointMassBallisticSolver();
