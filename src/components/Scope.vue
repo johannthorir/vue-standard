@@ -9,7 +9,7 @@
 export default {
     name: "Scope",
     props: [
-        'zeroInfo',
+        'load',        
         'scopeInfo',
         'solution'
     ],
@@ -154,7 +154,7 @@ export default {
             ctx.font = "bold 18px sans-serif";
             ctx.fillStyle = "rgb(240,240,255)";
             ctx.textBaseline = "middle";
-            ctx.fillText(this.scopeInfo.currentClick - this.zeroInfo.click, rot_x, rot_y);
+            ctx.fillText(this.scopeInfo.currentClick - this.load.click, rot_x, rot_y);
         }
     }
 }; // end module exports

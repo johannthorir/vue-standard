@@ -7,17 +7,42 @@ function StandardModel(maxRange, dragFunction) {
     // todo do proper changing of functions
 
     /* Specialty angular conversion functions */
-    function MOAtoDeg(moa) { return moa / 60.0; };
-    function DegtoMOA(deg) { return deg * 60.0; };
-    function DegtoRad(deg) { return deg * Math.PI / 180.0; };
-    function MOAtoRad(moa) { return moa / 60.0 * Math.PI / 180.0; };
-    function RadtoDeg(rad) { return rad * 180.0 / Math.PI; };
-    function RadtoMOA(rad) { return rad * 60.0 * 180.0 / Math.PI; };
-    function RadtoMIL(rad) { return rad * 1000.0; };
+    function MOAtoDeg(moa) {
+        return moa / 60.0;
+    }
+
+    function DegtoMOA(deg) {
+        return deg * 60.0;
+    }
+
+    function DegtoRad(deg) {
+        return deg * Math.PI / 180.0;
+    }
+
+    function MOAtoRad(moa) {
+        return moa / 60.0 * Math.PI / 180.0;
+    }
+
+    function RadtoDeg(rad) {
+        return rad * 180.0 / Math.PI;
+    }
+
+    function RadtoMOA(rad) {
+        return rad * 60.0 * 180.0 / Math.PI;
+    }
+
+    function RadtoMIL(rad) {
+        return rad * 1000.0;
+    }
 
     /* Environmental value conversion */
-    function hPatoinHg(pressure) { return pressure * 0.0295299802 }
-    function CelsiustoFahrenheit(temp) { return temp * 9 / 5 + 32; }
+    function hPatoinHg(pressure) {
+        return pressure * 0.0295299802
+    }
+
+    function CelsiustoFahrenheit(temp) {
+        return temp * 9 / 5 + 32;
+    }
 
     function DF(model) {
         var _functions = {
@@ -156,9 +181,18 @@ function StandardModel(maxRange, dragFunction) {
         return DragCoefficient * CD;
     }
     // i.e total time elapsed minus the time it would have taken with no decelation) i.e. total time lost multiplied by the wind speed and some factor.
-    function Windage(WindSpeed, Vi, xx, t) { return ((WindSpeed * 17.60) * (t - xx / Vi)); }
-    function HeadWind(WindSpeed, WindAngle) { return (Math.cos(DegtoRad(WindAngle)) * WindSpeed); }
-    function CrossWind(WindSpeed, WindAngle) { return (Math.sin(DegtoRad(WindAngle)) * WindSpeed); }
+    function Windage(WindSpeed, Vi, xx, t) {
+        return ((WindSpeed * 17.60) * (t - xx / Vi));
+    }
+
+    function HeadWind(WindSpeed, WindAngle) {
+        return (Math.cos(DegtoRad(WindAngle)) * WindSpeed);
+    }
+
+    function CrossWind(WindSpeed, WindAngle) {
+        return (Math.sin(DegtoRad(WindAngle)) * WindSpeed);
+    }
+
     function ZeroAngle(DragCoefficient, Vi, SightHeight, ZeroRange, yIntercept) {
         let riflemans = Math.atan((yIntercept - DropAtZero(DragCoefficient, Vi, SightHeight, ZeroRange)) / (ZeroRange * 36));
         if(ZeroRange < 600) return RadtoDeg(riflemans);
@@ -305,7 +339,8 @@ function StandardModel(maxRange, dragFunction) {
             if(path > result.maxpath) {
                 result.maxpath = path;
                 result.maxpathrange = x / 3; // in yards
-            } else if(path > -result.maxpath) {
+            }
+            else if(path > -result.maxpath) {
                 result.outerpath = path;
                 result.outerpathrange = x / 3;
             }
@@ -545,7 +580,8 @@ function StandardModel(maxRange, dragFunction) {
                 if(Step > 0) {
                     Step = -Step / 2;
                 }
-            } else if((yVertex * 12) <= (VitalSize / 2)) {
+            }
+            else if((yVertex * 12) <= (VitalSize / 2)) {
                 // Vertex too low.  Go upwards.
                 if(Step < 0) {
                     Step = -Step / 2;

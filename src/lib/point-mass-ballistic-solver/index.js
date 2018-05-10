@@ -13,7 +13,7 @@
     bullet weights are in grains... 
 */
 
-export default function () {
+export default function() {
     // Some physical and converion constants.
     const POUNDS_PER_KG = 2.20462;
     const INCHES_PER_METRE = 39.3701;
@@ -70,7 +70,7 @@ export default function () {
         [3.9, 0.501, -0.004], [4, 0.5006, -0.004], [4.2, 0.4998, -0.0015], [4.4, 0.4995, -0.0015],
         [4.6, 0.4992, -0.001], [4.8, 0.499, -0.001], [5, 0.4988, -0.001]
     ];
-
+    
     //! Environmental factors.
     //!   @param temperature - the ambient temperature in Celsius.
     //!   @param pressure    - local barometric pressure in hPa.
@@ -131,11 +131,16 @@ export default function () {
         return x0 - y0 * (x1 - x0) / (y1 - y0);
     }
 
+    this.setSystem = function(system) {
+       // console.log("Setting ballistic system to " + system)
+        this.CDTable = (system === 'G7' ? CD_G7 : CD_G1);
+    }
+
     //! Drag coefficient function
     //!   @param mach - the mach number
     //! @returns the drag coefficient in the current system corresponding to the given mach number.
-    function getCD(mach) {
-        let CDTable = CD_G7;
+    this.getCD = function(mach) {
+        let CDTable = this.CDTable;
         let iBelow = 0;
         let iAbove = CDTable.length - 1;
         // console.log("Looking for " + mach + " initial range : " + i_below + " to " + i_above);
@@ -163,7 +168,8 @@ export default function () {
     //! points spaced approximately every STEP metres.
     //! @returns an array of point objects representing the trajectory containing x-value y-value,
     //! velocity, time and windage.
-    function getTrajectory(range, angle, velocity, mass, bc, reference, environment) {
+    this.getTrajectory = function(range, angle, velocity, mass, bc, system, reference, environment) {
+        this.setSystem(system);
         let points = [];
         let v_x = velocity * Math.cos(angle);
         let v_y = velocity * Math.sin(angle);
@@ -178,7 +184,7 @@ export default function () {
             let v = Math.sqrt(v_x * v_x + v_y * v_y);
             let mach = v / environment.mach1;
             // Get the coefficient of drag from the table for this axial velocity.
-            let F = 0.5 * environment.rho * v * v * getCD(mach) * A;
+            let F = 0.5 * environment.rho * v * v * this.getCD(mach) * A;
             // horizontal and vertical drag
             let F_x = F * v_x / v;
             let F_y = F * v_y / v;
@@ -242,8 +248,9 @@ export default function () {
     //!   @param reference   - the height of the horizontal reference.
     //!   @param environment - the environmental factors to consider.
     //! @returns the angle in radians.
-    function getZeroingAngle(range, offset, velocity, mass, bc, reference, environment) {
-        let path = getTrajectory(range, 0, velocity, mass, bc, reference, environment);
+    this.getZeroingAngle = function(range, offset, velocity, mass, bc, system, reference, environment) {
+
+        let path = this.getTrajectory(range, 0, velocity, mass, bc, system, reference, environment);
         return Math.atan2(-path[path.length - 1].y + offset, path[path.length - 1].x);
     }
 
@@ -272,8 +279,6 @@ export default function () {
     }
     
     this.EnvironmentalFactors = EnvironmentalFactors;
-    this.getZeroingAngle = getZeroingAngle;
-    this.getTrajectory = getTrajectory;
     this.getEnvelope = getEnvelope;
     this.linearInterpolate = linearInterpolate;
     this.crossWind = crossWind;

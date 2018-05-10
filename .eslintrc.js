@@ -24,7 +24,16 @@ module.exports = {
     'generator-star-spacing': 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'semi' : 'off',     
-    'keyword-spacing': [ 'error'        , { 'after': false,  "overrides": { "return" : {"after" : true}, "from": { "after": true } } } ],
+    'keyword-spacing': [ 'error', { 
+      'after': false,  
+      "overrides": {
+        "return" : { "after" : true }, 
+        "from": { "after": true },
+        "import": { "after": true },
+        "else" : { "after" : true } 
+      } 
+    } ],
+    'brace-style' : [ 'error', 'stroustrup' ],
     'indent': ['error', 4],
     'space-before-function-paren': ['error', {
       'anonymous': 'always',

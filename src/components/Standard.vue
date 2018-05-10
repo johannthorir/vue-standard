@@ -2,7 +2,20 @@
 
 <template>
 <div>
-    <h1>{{ projectile.name }}</h1>
+    <modal v-if="projectile.showLoadDialog" @close="projectile.showLoadDialog = false">
+        <div slot="header">Select load</div>
+        <div slot="body">
+            <ul class="load-list">
+                <li 
+                    v-for="(ld, index) in this.$store.state.loads"
+                    @click="selectLoad(index)"
+                >(#{{ld.id}}) - {{ ld.name }}</li>
+            </ul>
+        </div>
+        <div slot="footer"><a @click="projectile.showLoadDialog = false">Cancel</a></div>
+    </modal>
+    <h1>{{ load.name }}</h1>
+    <div class="s" style="padding:0px 10px;"><p><a @click="projectile.showLoadDialog = true">Click to select from known loads </a></p></div>
     <div class="hello">        
         <ul>
             <li><a href="https://vuejs.org"                         target="_blank"> Core Docs               </a></li>
@@ -23,10 +36,11 @@
         <div class="s">
             <h3 v-on:click="projectile.show = !projectile.show" v-bind:class="{ active : projectile.show }">{{projectile.title}}</h3>
             <div class="inputs" v-show="projectile.show">
-                <label class="field"><span class="label">Name</span><input type="text" v-model="projectile.name" size="20"></label>
-                <number-input v-model.number="projectile.weight"   name="Bullet Weight"  :units="units.bulletWeight"         @input="refresh()"></number-input>
-                <number-input v-model.number="projectile.bc"       name="G7 BC        "  :units="units.ballisticCoefficient" @input="refresh()"></number-input>
-                <number-input v-model.number="projectile.tempSens" name="Temp. sens.  "  :units="units.tempSens"             @input="refresh()"></number-input>
+                <label class="field"><span class="label">Name</span><input type="text" v-model="load.name" size="20"></label>
+                <number-input v-model.number="load.weight"   name="Bullet Weight"  :units="units.bulletWeight"         @input="refresh()"></number-input>
+                <number-input v-model.number="load.bc"       :name="load.system + ' BC'"  :units="units.ballisticCoefficient" @input="refresh()"></number-input>
+                <number-input v-model.number="load.tempSens" name="Temp. sens.  "  :units="units.tempSens"             @input="refresh()"></number-input>
+                
             </div>
         </div>
         <div class="s">
@@ -41,12 +55,12 @@
         <div class="s">
             <h3 v-on:click="zeroInfo.show = !zeroInfo.show" v-bind:class="{ active : zeroInfo.show }">{{zeroInfo.title}}</h3>
             <div class="inputs" v-show="zeroInfo.show">
-                <number-input v-model.number="zeroInfo.speed"       name="Speed"       :units="units.velocity"     @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.range"       name="Range"       :units="units.range"        @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.offset"      name="Offset"      :units="units.offset"       @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.click"       name="Click"       :units="units.scopeClick"   @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.temperature" name="Temperature" :units="units.temperature"  @input="refresh()"></number-input>
-                <number-input v-model.number="zeroInfo.pressure"    name="Pressure"    :units="units.pressure"     @input="refresh()"></number-input>
+                <number-input v-model.number="load.speed"       name="Speed"       :units="units.velocity"     @input="refresh()"></number-input>
+                <number-input v-model.number="load.range"       name="Range"       :units="units.range"        @input="refresh()"></number-input>
+                <number-input v-model.number="load.offset"      name="Offset"      :units="units.offset"       @input="refresh()"></number-input>
+                <number-input v-model.number="load.click"       name="Click"       :units="units.scopeClick"   @input="refresh()"></number-input>
+                <number-input v-model.number="load.temperature" name="Temperature" :units="units.temperature"  @input="refresh()"></number-input>
+                <number-input v-model.number="load.pressure"    name="Pressure"    :units="units.pressure"     @input="refresh()"></number-input>
             </div>
         </div>
         <div class="s">
@@ -62,7 +76,7 @@
         </div>
         <div class="s">
             <h3 v-on:click="scopeInfo.showScopeAdjust = !scopeInfo.showScopeAdjust" v-bind:class="{ active : scopeInfo.showScopeAdjust }">Scope</h3>
-            <Scope :zero-info="zeroInfo" :scope-info="scopeInfo" :solution="solution" @clickity="refresh()" ref="scope" v-if="scopeInfo.showScopeAdjust"></Scope>
+            <Scope :load="load" :scope-info="scopeInfo" :solution="solution" @clickity="refresh()" ref="scope" v-if="scopeInfo.showScopeAdjust"></Scope>
         </div>
         <div class="s">
             <h3 v-on:click="solution.show = !solution.show" v-bind:class="{ active : solution.show }">{{ solution.title }}</h3>
@@ -70,7 +84,7 @@
         </div>
         <div class="info">
             <div>Crosswind is {{ crossWindStrength.toFixed(1) }} m/s from {{ crossWindDirection < 0 ? "left to right" : "right to left "}}</div>
-            <div><i>Current zero at {{solution.envelope.zeros.far.toFixed(1)}} m for click {{ scopeInfo.currentClick - zeroInfo.click }}</i></div>
+            <div><i>Current zero at {{solution.envelope.zeros.far.toFixed(1)}} m for click {{ scopeInfo.currentClick - load.click }}</i></div>
             <div>Pbr: {{ solution.envelope.pbr.near.toFixed(1) }} m - {{solution.envelope.pbr.far.toFixed(1) }} m
             <span v-if="solution.envelope.maxPoint.y > 0"> &mdash; Zone: {{ ((solution.envelope.maxPoint.y * 2)*1000).toFixed(0)}} mm.</span></div>
         </div>
@@ -94,12 +108,20 @@ ul {
     padding: 0;
 }
 
+
 li {
-    display: inline-block;
+    display: block;
+    line-height : 26px;
+    border-bottom : 1px solid #eee;
     margin: 0 10px;
+    padding: 10px;
 }
 
-a {    color: #42b983;}
+ul.load-list li {
+    cursor: pointer;  
+}
+
+a {    color: #457; cursor:pointer; }
 
 h3 { 
     font-size : 15pt; 
@@ -193,10 +215,18 @@ div.info {
 </style>
 
 <script>
+
 import Solution from './Solution.vue';
 import NumberInput from './NumberInput.vue';
 import Scope from './Scope.vue';
+import Modal from './Modal.vue';
 import Vue from 'vue';
+
+Vue.component('Scope', Scope);
+Vue.component('number-input', NumberInput);
+Vue.component('Solution', Solution);
+Vue.component('Modal', Modal);
+
 import PointMassBallisticSolver from '../lib/point-mass-ballistic-solver';
 
 
@@ -268,25 +298,25 @@ const Units = {
     MPS:                 { unit: "m/s",      step: 0.1,   precision: 1, a: 0,  b: 1                 },
     MPSasKM:             { unit: "km/h",     step: 0.1,   precision: 1, a: 0,  b: 3.6               },
     MPSasMPH:            { unit: "Mph",      step: 0.1,   precision: 1, a: 0,  b: 2.23694           },
-    MM:                  { unit: "mm",       step: 1,     precision: 0, a: 0,  b: 1                 },
-    MMasCM:              { unit: "cm",       step: 0.5,   precision: 1, a: 0,  b: 0.1               },
-    MMasIN:              { unit: "in",       step: 0.1,   precision: 1, a: 0,  b: 0.0393701         },
+    MetersAsMM:          { unit: "mm",       step: 1,     precision: 0, a: 0,  b: 1000              },
+    MetersAsCM:          { unit: "cm",       step: 0.5,   precision: 1, a: 0,  b: 100               },
+    MetersAsIN:          { unit: "in",       step: 0.1,   precision: 1, a: 0,  b: 39.3701           },
     NoneInteger:         { unit: "",         step: 1,     precision: 0, a: 0,  b: 1                 },
     Celsius:             { unit: "°C",       step: 0.1,   precision: 1, a: 0,  b: 1                 },
     CelsiusAsFahrenheit: { unit: "°F",       step: 0.1,   precision: 1, a: 32, b: 1.8               },                
     RADasDegrees:        { unit: "°",        step: 1,     precision: 0, a: 0,  b: 180.0/Math.PI     },
     RADasClock:          { unit: "o'clock",  step: 1,     precision: 0, a: 0,  b: 6/Math.PI         },
-    RADAsMil:            { unit: "MIL",      step: 1,     precision: 0, a: 0,  b: 3200/Math.PI      },
+    RADasMil:            { unit: "MIL",      step: 1,     precision: 0, a: 0,  b: 3200/Math.PI      },
     Degrees:             { unit: "°",        step: 1,     precision: 0, a: 0,  b: 1                 },
     DegreesAsClock:      { unit: "o'clock",  step: 1,     precision: 0, a: 0,  b: 12/360            },
     DegreesAsMil:        { unit: "MIL",      step: 1,     precision: 0, a: 0,  b: 6400/360          },
     MRAD:                { unit: "mrad",     step: 0.01,  precision: 2, a: 0,  b: 1                 },
-    MRADasCM:            { unit: "cm/100m",  step: 0.10,  precision: 1, a: 0,  b: 10                },
-    MRADasIN:            { unit: "in/100yd", step: 0.05,  precision: 2, a: 0,  b: 3.60000009259259  },
-    MRADasMOA:           { unit: "MOA",      step: 0.01,  precision: 2, a: 0,  b: 3.43774677078494  },
-    RADasMRAD:           { unit: "mrad",     step: 0.01,  precision: 2, a: 0,  b: 1000              },
-    RADasCM:             { unit: "cm/100m",  step: 0.10,  precision: 1, a: 0,  b: 10000             },
-    RADasIN:             { unit: "in/100yd", step: 0.05,  precision: 2, a: 0,  b: 3600.00009259259  },
+    MRADasCM:            { unit: "cm/100m",  step: 0.10,  precision: 2, a: 0,  b: 10                },
+    MRADasIN:            { unit: "in/100yd", step: 0.05,  precision: 3, a: 0,  b: 3.60000009259259  },
+    MRADasMOA:           { unit: "MOA",      step: 0.01,  precision: 3, a: 0,  b: 3.43774677078494  },
+    RADasMRAD:           { unit: "mrad",     step: 0.001,  precision: 3, a: 0,  b: 1000              },
+    RADasCM:             { unit: "cm/100m",  step: 0.01,  precision: 2, a: 0,  b: 10000             },
+    RADasIN:             { unit: "in/100yd", step: 0.005,  precision: 3, a: 0,  b: 3600.00009259259  },
     RADasMOA:            { unit: "MOA",      step: 0.01,  precision: 2, a: 0,  b: 3437.74677078494  },
     HPA:                 { unit: "hPa",      step:1,      precision: 0, a: 0,  b: 1                 },
     HPAasINHG:           { unit: "inHg",     step:0.1,    precision: 1, a: 0,  b: 0.029529983071445 }
@@ -295,9 +325,7 @@ const Units = {
 
 import _ from 'lodash';
 
-Vue.component('Scope', Scope);
-Vue.component('number-input', NumberInput);
-Vue.component('Solution', Solution);
+
 
 /* eslint key-spacing: 'off' */
 /* eslint no-multi-spaces : 'off' */
@@ -325,42 +353,51 @@ export default {
                     this.refresh();
                 });
         },
+        selectLoad: function(index) {
+            Vue.set(this, 'load', this.$store.state.loads[index]);
+            this.projectile.showLoadDialog = false;
+            this.refresh();
+        },
         refresh : function() {
             this.solve();
             if(this.$refs.scope)  this.$refs.scope.render();
+        },
+        persist: function() {
+            this.$store.dispatch('persist');
         },
 
         bound : function(value, min, max) {
             return Math.max(min, Math.min(value, max));
         },
         solve : function() {
-            var projectile_bc      = this.bound(this.projectile.bc, 0.1, 1.0);
-            var projectile_mass    = this.bound(this.projectile.weight, 0.001, 1); // kg.
-            var reference          = this.bound(this.scopeInfo.height, 0.0,100) / 1000; // mm to metre.
+            var projectile_bc      = this.bound(this.load.bc, 0.1, 1.0);
+            var projectile_mass    = this.bound(this.load.weight, 0.001, 1); // kg.
+            var reference          = this.bound(this.scopeInfo.height, 0.0,0.2); 
             
-            var zeroRange          = this.bound(this.zeroInfo.range, 50, 1000);
-            var zeroSpeed          = this.bound(this.zeroInfo.speed, 500, 5000); 
-            var zeroPressure       = this.bound(this.zeroInfo.pressure,       910.0, 1100.0);
-            var zeroTemperature    = this.bound(this.zeroInfo.temperature,     -30.0, 50.0);
-            var zeroOffset         = this.zeroInfo.offset / 1000; // mm to metre
+            var zeroRange          = this.bound(this.load.range, 50, 1000);
+            var zeroSpeed          = this.bound(this.load.speed, 500, 5000); 
+            var zeroPressure       = this.bound(this.load.pressure,       910.0, 1100.0);
+            var zeroTemperature    = this.bound(this.load.temperature,     -30.0, 50.0);
+            var zeroOffset         = this.load.offset; // mm to metre
             
             var envTemperature     = this.bound(this.environment.temperature,  -30.0, 50.0);            
             var envPressure        = this.bound(this.environment.pressure,       910.0, 1100.0);            
-            var envSpeed           = zeroSpeed + (envTemperature - zeroTemperature)*this.projectile.tempSens;
+            var envSpeed           = zeroSpeed + (envTemperature - zeroTemperature)*this.load.tempSens;
             var envWindspeed       = this.bound(this.environment.windspeed,     0.0,  40.0);
             var envWinddirection   = (this.environment.winddirection - this.environment.shootdirection);
-            var zeroEnvironment    = new bcd.EnvironmentalFactors(zeroTemperature, zeroPressure, 0.5, 0.0, 0.0);
-            var currentEnvironment = new bcd.EnvironmentalFactors(envTemperature, envPressure, 0.5, envWindspeed, envWinddirection);
+            var zeroEnv            = new bcd.EnvironmentalFactors(zeroTemperature, zeroPressure, 0.5, 0.0, 0.0);
+            var currentEnv         = new bcd.EnvironmentalFactors(envTemperature, envPressure, 0.5, envWindspeed, envWinddirection);
 
-            let angle =  bcd.getZeroingAngle(zeroRange, zeroOffset, zeroSpeed, projectile_mass, projectile_bc, reference, zeroEnvironment);
+            let angle =  bcd.getZeroingAngle(zeroRange, zeroOffset, zeroSpeed, projectile_mass, projectile_bc, this.load.system, reference, zeroEnv);
             let scopeClick = this.scopeInfo.verClick; // rad 
             let clicks = angle / scopeClick;
             // console.log('-----------------------------------------------------------------')
             // console.log(`Zero angle is ${(angleMrad).toFixed(2)} mrad or ${clicks.toFixed(1)} clicks`);
-            angle += (this.scopeInfo.currentClick - this.zeroInfo.click) * scopeClick;
+            angle += (this.scopeInfo.currentClick - this.load.click) * scopeClick;
                 
             let range = this.solution.path[this.solution.path.length - 1].x;
-            let trajectory = bcd.getTrajectory(range + 0.1, angle , envSpeed, projectile_mass, projectile_bc, reference, currentEnvironment);
+            // console.log(this.load);
+            let trajectory = bcd.getTrajectory(range + 0.1, angle , envSpeed, projectile_mass, projectile_bc, this.load.system, reference, currentEnv);
             let envelope = bcd.getEnvelope(trajectory);
             let rangeIndex = 0;
             let newPath = [];
@@ -394,11 +431,25 @@ export default {
         crossWindDirection: function() {
             return Math.sign(bcd.crossWind(this.environment.windspeed, (this.environment.winddirection - this.environment.shootdirection)))
         }
+
     },
     created : function() {  
-        console.log(this.$store);
+        Vue.set(this, 'load', this.$store.state.loads[0]);
+        /*
+        this.load.name        = this.$store.state.load.name;
+        this.load.bc          = this.$store.state.load.bc;
+        this.load.weight      = this.$store.state.load.weight;
+        this.load.tempSens    = this.$store.state.load.tempsens;
+        this.load.speed       = this.$store.state.load.chronograph;
+        this.load.range       = this.$store.state.load.range;
+        this.load.offset      = this.$store.state.load.offset;
+        this.load.click       = this.$store.state.load.click;
+        this.load.temperature = this.$store.state.load.temperature;
+        this.load.pressure    = this.$store.state.load.pressure;
+        */
         this.solve();
     },
+
     data : function () {
         return {
             /*
@@ -415,7 +466,7 @@ export default {
                 velocity:  [ Units.MPSasFPS, Units.MPS ],
                 range: [ Units.Meters, Units.MetersAsYards, Units.MetersAsFeet ],
                 speed: [ Units.MPS, Units.MPSasKM, Units.MPSasMPH ],
-                offset: [ Units.MM, Units.MMasCM, Units.MMasIN ],
+                offset: [ Units.MetersAsMM, Units.MetersAsCM, Units.MetersAsIN ],
                 scopeClick: [ Units.NoneInteger ],
                 temperature: [ Units.Celsius, Units.CelsiusAsFahrenheit ],
                 direction: [ Units.RADasDegrees, Units.RADasClock, Units.RADasMil ],
@@ -424,36 +475,40 @@ export default {
             },                                                                                                                                                                                                                                                             
             msg: 'Bleh',            
             showScopeAdjust : true,
+            load: {
+                id: 59,
+                date: '2018-04-06T09:30:00.000Z',
+                name: 'Nosler 95gr BT',
+                weight: 0.006155,
+                system: 'G7',
+                bc: 0.190,
+                tempSens: 0.94,
+                speed: 932.6,
+                range: 100.0,
+                offset: -0.032,
+                click: 0,
+                temperature: -1,
+                pressure: 1017,
+                windspeed: 4.0,
+                winddirection : 320/180*Math.PI,
+            },
             projectile : {
                 title         : 'Projectile',
                 show          : false,
-                name          : 'Nosler BT 95',
-                weight        : 0.006155, 
-                // bc            : 0.379,    // G1 ballistic coefficient.
-                bc : 0.190, // G7 ballistics coefficent
-                tempSens      : 0.94,  // m/s pr degree Celsius.
-                adjustedSpeed : 3000,
-                adjustedBC    : 0.379
+                showLoadDialog: false,
+                adjustedSpeed : 3000
             },
             zeroInfo  : {
                 title       : 'Zeroing conditions',
                 show        : false,
-                speed       : 932.7, // m/s at the muzzle
-                range       : 100,  // m horizontal
-                offset      :  -32,   // mm impact offset from point of aim - negative is below, positive is above.
-                click       :  0,   // click setting of scope when zeroing
-                temperature : -1, // °c
-                pressure    : 1017, // hPa
-                zeroAngle   : 0
-
             },
 
             scopeInfo : {
                 title    : 'Scope setup',
                 show     : false,
-                height   : 44, // mm height above boreline.
-                verClick : 0.00007, // rad
-                horClick : 0.00007, // rad
+                height   : 44.0e-3, // mm height above boreline.
+                verClick : 6.7e-5, // rad
+                horClick : 6.7e-5, // rad
                 clicksPrTurn : 35,
                 currentClick : 0, // current click on the scope.
                 accumulated : 0.0, // accumulated clicks
