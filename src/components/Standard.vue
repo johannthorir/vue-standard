@@ -239,8 +239,6 @@ var state = {
   initial : { x : 0, y : 0 },
 };
 
-
-
 Vue.directive('rotator', { 
     bind: function(el, binding, vnode) {
       function emit(name, data) {
@@ -281,13 +279,10 @@ Vue.directive('rotator', {
 
 */
 
-
-
-
-
-
 /* eslint key-spacing: 'off' */
 /* eslint no-multi-spaces : 'off' */
+
+/* Mock weather service */
 const localWeather = "https://vpn.kiesel.is/weather/keflavik.json"
 
 export default {
@@ -302,7 +297,7 @@ export default {
                         title : "KEF Environment at " + new Date(d.dt * 1000).toLocaleTimeString("IS-is"),
                         show : true,
                         windspeed     : d.wind.speed, // ms.
-                        winddirection : d.wind.deg / 180 * Math.PI, // radians
+                        winddirection : d.wind.deg / 180 * Math.PI, // to radians
                         temperature   : d.main.temp, // °C
                         pressure      : d.main.pressure,
                         shootdirection: this.environment.shootdirection
@@ -312,15 +307,18 @@ export default {
                     this.refresh();
                 });
         },
+        
         selectLoad: function(index) {
             Vue.set(this, 'load', this.$store.state.loads[index]);
             this.projectile.showLoadDialog = false;
             this.refresh();
         },
+        
         refresh : function() {
             this.solve();
             if(this.$refs.scope)  this.$refs.scope.render();
         },
+
         persist: function() {
             this.$store.dispatch('persist');
         },
@@ -328,9 +326,11 @@ export default {
         bound : function(value, min, max) {
             return Math.max(min, Math.min(value, max));
         },
+        
         solve : function() {
-            var projectile_bc      = this.bound(this.load.bc, 0.1, 1.0);
-            var projectile_mass    = this.bound(this.load.weight, 0.001, 1); // kg.
+            var system             = this.load.system;
+            var bc                 = this.bound(this.load.bc, 0.1, 1.0);
+            var mass               = this.bound(this.load.weight, 0.001, 1); // kg.
             var reference          = this.bound(this.scopeInfo.height, 0.0,0.2); 
             
             var zeroRange          = this.bound(this.load.range, 50, 1000);
@@ -347,17 +347,13 @@ export default {
             var zeroEnv            = new bcd.EnvironmentalFactors(zeroTemperature, zeroPressure, 0.5, 0.0, 0.0);
             var currentEnv         = new bcd.EnvironmentalFactors(envTemperature, envPressure, 0.5, envWindspeed, envWinddirection);
 
-            let angle =  bcd.getZeroingAngle(zeroRange, zeroOffset, zeroSpeed, projectile_mass, projectile_bc, this.load.system, reference, zeroEnv);
-            let scopeClick = this.scopeInfo.verClick; // rad 
-            let clicks = angle / scopeClick;
-            // console.log('-----------------------------------------------------------------')
-            // console.log(`Zero angle is ${(angleMrad).toFixed(2)} mrad or ${clicks.toFixed(1)} clicks`);
-            angle += (this.scopeInfo.currentClick - this.load.click) * scopeClick;
-                
-            let range = this.solution.path[this.solution.path.length - 1].x;
-            // console.log(this.load);
-            let trajectory = bcd.getTrajectory(range + 0.1, angle , envSpeed, projectile_mass, projectile_bc, this.load.system, reference, currentEnv);
-            let envelope = bcd.getEnvelope(trajectory);
+            let angle      =  bcd.getZeroingAngle(zeroRange, zeroOffset, zeroSpeed, mass, bc, system, reference, zeroEnv);
+            // let clicks     = angle / scopeClick;
+            let scopeAngle = (this.scopeInfo.currentClick - this.load.click) * this.scopeInfo.verClick;                
+            let range      = this.solution.path[this.solution.path.length - 1].x;
+            let trajectory = bcd.getTrajectory(range + 0.1, angle + scopeAngle, envSpeed, mass, bc, system, reference, currentEnv);
+            let envelope   = bcd.getEnvelope(trajectory);
+            
             let rangeIndex = 0;
             let newPath = [];
             let tclick = Math.tan(this.scopeInfo.verClick);

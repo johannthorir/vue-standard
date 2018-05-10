@@ -1,4 +1,7 @@
 'use strict';
+/*
+   Speed of sound code based on code from: Dr Richard Lord - http://www.npl.co.uk/acoustics/techguides/speedair
+*/
 
 /* eslint-disable */ 
 /*
@@ -162,6 +165,7 @@ export default function() {
     //!   @param velocity    - initial velocity in metres / second.
     //!   @param mass        - mass of the projectile in kilogrammes.
     //!   @param bc          - the ballistic coefficient of the projectile in the selected system.
+    //!   @param system      - use G1 or G7, strings 'G1' or 'G7' respectively.
     //!   @param reference   - the height of the horizontal reference.
     //!   @param environment - the environmental factors to consider.
     //! The trajectory will be computed with variable time delta which will give trajectory

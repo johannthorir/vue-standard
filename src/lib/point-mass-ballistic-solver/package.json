@@ -1,0 +1,18 @@
+{
+    "name"       : "point-mass-ballistic-solver",
+    "version"    : "1.0.0",
+    "description": "A point-mass solver for small-arms external ballistics.",
+    "keywords"   : [ "ballistics", "g1", "g7" ],
+    "homepage"   : "https://github.com/johannthorir/",
+    "bugs"       : {
+        "url": "https://github.com/johannthorir/vue-standard/issues"
+    },
+    "license"    : "UNLICENSED",
+    "author"     : {
+        "name" : "Jóhann Þórir Jóhannsson",
+        "url"  : "https://github.com/johannthorir",
+        "email": "johann.johannsson@gmail.com"
+    },
+    "private"    : true,
+    "main"       : "index.js"
+}
