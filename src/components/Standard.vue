@@ -227,7 +227,7 @@ Vue.component('number-input', NumberInput);
 Vue.component('Solution', Solution);
 Vue.component('Modal', Modal);
 
-import PointMassBallisticSolver from '../lib/point-mass-ballistic-solver';
+import PointMassBallisticSolver from 'point-mass-ballistic-solver';
 import Units from '../lib/unit-conversions';
 import _ from 'lodash';
 
