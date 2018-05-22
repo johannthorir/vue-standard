@@ -392,6 +392,9 @@ export default {
     created : function() {  
         Vue.set(this, 'load', this.$store.state.loads[0]);
         this.solve();
+
+        console.log(bcd.pressureCorrection(10.0, 500.0, 1013.25))
+
     },
 
     data : function () {
@@ -409,8 +412,7 @@ export default {
                 direction: [ Units.RADasDegrees, Units.RADasClock, Units.RADasMil ],
                 clickSize: [Units.RADasMRAD, Units.RADasCM, Units.RADasIN, Units.RADasMOA ],
                 pressure: [ Units.HPA, Units.HPAasINHG ],
-            },                                                                                                                                                                                                                                                             
-            msg: 'Bleh',            
+            },                                                                                                                                                                                                                                                                                 
             showScopeAdjust : true,
             load: {
                 id: 59,
