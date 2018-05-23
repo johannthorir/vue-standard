@@ -227,7 +227,7 @@ Vue.component('number-input', NumberInput);
 Vue.component('Solution', Solution);
 Vue.component('Modal', Modal);
 
-import PointMassBallisticSolver from 'point-mass-ballistic-solver';
+import { PointMassBallisticSolver, EnvironmentalFactors } from 'point-mass-ballistic-solver';
 import Units from '../lib/unit-conversions';
 import _ from 'lodash';
 
@@ -344,9 +344,9 @@ export default {
             var envSpeed           = zeroSpeed + (envTemperature - zeroTemperature)*this.load.tempSens;
             var envWindspeed       = this.bound(this.environment.windspeed,     0.0,  40.0);
             var envWinddirection   = (this.environment.winddirection - this.environment.shootdirection);
-            var zeroEnv            = new bcd.EnvironmentalFactors(zeroTemperature, zeroPressure, 0.5, 0.0, 0.0);
-            var currentEnv         = new bcd.EnvironmentalFactors(envTemperature, envPressure, 0.5, envWindspeed, envWinddirection);
-
+            var zeroEnv            = new EnvironmentalFactors(zeroTemperature, zeroPressure, 0.5, 0.0, 0.0);
+            var currentEnv         = new EnvironmentalFactors(envTemperature, envPressure, 0.5, envWindspeed, envWinddirection);
+            this.environment.crossWind = currentEnv.crossWind;            
             let angle      =  bcd.getZeroingAngle(zeroRange, zeroOffset, zeroSpeed, mass, bc, system, reference, zeroEnv);
             // let clicks     = angle / scopeClick;
             let scopeAngle = (this.scopeInfo.currentClick - this.load.click) * this.scopeInfo.verClick;                
@@ -381,10 +381,10 @@ export default {
     }, 
     computed : {
         crossWindStrength: function() {
-            return Math.abs(bcd.crossWind(this.environment.windspeed, (this.environment.winddirection - this.environment.shootdirection)))
+            return Math.abs(this.environment.crossWind)
         },
         crossWindDirection: function() {
-            return Math.sign(bcd.crossWind(this.environment.windspeed, (this.environment.winddirection - this.environment.shootdirection)))
+            return Math.sign(this.environment.crossWind)
         }
 
     },
@@ -462,7 +462,9 @@ export default {
                 winddirection : 63/180*Math.PI, // radians
                 temperature   : -1, // °C
                 pressure      : 1017,
-                shootdirection : 180/180*Math.PI // radians
+                shootdirection : 180/180*Math.PI, // radians
+                crossWindStrength : 0,
+                crossWindDirection : 0
             },
             // ballistic solution to the zero information.
             solution : {

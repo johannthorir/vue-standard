@@ -13,7 +13,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "js-quantities": "^1.7.2",
-    "point-mass-ballistic-solver": "git+https://github.com/johannthorir/point-mass-ballistic-solver.git#1.2.1",
+    "point-mass-ballistic-solver": "git+https://github.com/johannthorir/point-mass-ballistic-solver.git",
     "rethinkdb": "^2.3.3",
     "vue": "^2.5.2",
     "vue-axios": "^2.1.1",
