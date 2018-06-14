@@ -1,6 +1,11 @@
 <template>
     <div class="scopecontainer" >
-        <canvas class="scope" ref="canvas" width="360" height="360" @mousemove="mmove" @mousedown="mdown" @mouseup="mup" @touchmove="touchmove" @touchstart="touchstart"></canvas>
+        <canvas class="scope" ref="canvas" width="360" height="360"
+            @pointermove="mmove"
+            @pointerdown="mdown"            
+            @pointerup="mup"
+            @touchmove="touchmove"
+            @touchstart="touchstart"></canvas>
     </div>
 </template>
 
@@ -19,7 +24,8 @@ export default {
     data: function () {
         return({
             rotating: null,
-            captured: false
+            captured: false,
+            
         });
     },
 
@@ -39,28 +45,17 @@ export default {
         mdown: function (event) {
             if (event) event.preventDefault;
             this.captured = true;
-            if (event.target.setCapture)
-                event.target.setCapture();
+            event.target.setPointerCapture(event.pointerId);
             this.start(event, event.target.getBoundingClientRect());
 
         },
+        
         mup: function (event) {
             if (event) event.preventDefault;
+            event.target.releasePointerCapture(event.pointerId);
             this.captured = false;
-            if (document.releaseCapture)
-                document.releaseCapture();
         },
-
-        touchstart: function (event) {
-            if (event) event.preventDefault;
-            this.start(event.targetTouches[0], event.srcElement.getBoundingClientRect());
-        },
-
-        touchmove: function (event) {
-            if(event) event.preventDefault();
-            this.move(event.targetTouches[0], event.srcElement.getBoundingClientRect());
-        },
-
+        
         start: function (t, r) {
             var dx = (t.clientX - r.x) - this.scopeInfo.center.x;
             var dy = (t.clientY - r.y) - this.scopeInfo.center.y;
