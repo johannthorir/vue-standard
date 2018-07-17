@@ -1,11 +1,11 @@
 <template>
     <div class="scopecontainer" >
         <canvas class="scope" ref="canvas" width="360" height="360"
-            @pointermove="mmove"
-            @pointerdown="mdown"            
+            @pointermove.stop="mmove"
+            @pointerdown.stop="mdown"            
             @pointerup="mup"
-            @touchmove="touchmove"
-            @touchstart="touchstart"></canvas>
+            @touchmove.prevent="touchmove"
+            @touchstart.prevent="touchstart"></canvas>
     </div>
 </template>
 
