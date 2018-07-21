@@ -19,7 +19,7 @@ const store = new Vuex.Store({
             {
                 id: 48,
                 date: '2014-06-13T12:00:00.000Z',
-                name: 'Sierray 70gr HBPT MK',
+                name: 'Sierra 70gr HBPT MK',
                 weight: 0.00454,
                 system: 'G1',
                 bc: 0.260,
