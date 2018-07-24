@@ -446,8 +446,8 @@ export default {
                 title    : 'Scope setup',
                 show     : false,
                 height   : 44.0e-3, // mm height above boreline.
-                verClick : 6.7e-5, // rad
-                horClick : 6.7e-5, // rad
+                verClick : 7.0e-5, // rad
+                horClick : 7.0e-5, // rad
                 clicksPrTurn : 35,
                 currentClick : 0, // current click on the scope.
                 accumulated : 0.0, // accumulated clicks
