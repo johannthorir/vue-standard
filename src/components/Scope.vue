@@ -1,8 +1,8 @@
 <template>
     <div class="scopecontainer" >
         <canvas class="scope" ref="canvas" width="360" height="360"
-            @pointermove.stop="mmove"
-            @pointerdown.stop="mdown"            
+            @pointermove.prevent="mmove"
+            @pointerdown.prevent="mdown"            
             @pointerup="mup"
             @touchmove.prevent="touchmove"
             @touchstart.prevent="touchstart"></canvas>
