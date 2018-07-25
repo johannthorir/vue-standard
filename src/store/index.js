@@ -17,6 +17,23 @@ const store = new Vuex.Store({
         version: version,
         loads: [
             {
+                id: 48,
+                date: '2014-06-13T12:00:00.000Z',
+                name: 'Sierra 70gr HBPT MK',
+                weight: 0.00454,
+                system: 'G1',
+                bc: 0.260,
+                tempSens: 0.94,
+                speed: 1045.1,
+                range: 200.0,
+                offset: 0,
+                click: 20,
+                temperature: 14.0,
+                pressure: 1024,
+                windspeed: 0.0,
+                winddirection: 0,
+            },
+            {
                 id: 59,
                 date: '2018-04-06T09:30:00.000Z',
                 name: 'Nosler 95gr BT',
