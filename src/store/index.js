@@ -45,8 +45,8 @@ const store = new Vuex.Store({
                 range: 100.0,
                 offset: 0.035,
                 click: 0,
-                temperature: -1,
-                pressure: 1017,
+                temperature: 11,
+                pressure: 998,
                 windspeed: 4.0,
                 winddirection: 320 / 180 * Math.PI
             },
