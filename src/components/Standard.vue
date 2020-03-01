@@ -16,22 +16,6 @@
     </modal>
     <h1>{{ load.name }}</h1>
     <div class="s" style="padding:0px 10px;"><p><a @click="projectile.showLoadDialog = true">Click to select from known loads </a></p></div>
-    <div class="hello">        
-        <ul>
-            <li><a href="https://vuejs.org"                         target="_blank"> Core Docs               </a></li>
-            <li><a href="https://forum.vuejs.org"                   target="_blank"> Forum                   </a></li>
-            <li><a href="https://chat.vuejs.org"                    target="_blank"> Community Chat          </a></li>
-            <li><a href="https://twitter.com/vuejs"                 target="_blank"> Twitter                 </a></li>
-            <li><a href="http://vuejs-templates.github.io/webpack/" target="_blank"> Docs for This Template  </a></li>
-        </ul>
-
-        <ul>
-            <li><a href="http://router.vuejs.org/"             target="_blank"> vue-router    </a></li>
-            <li><a href="http://vuex.vuejs.org/"               target="_blank"> vuex          </a></li>
-            <li><a href="http://vue-loader.vuejs.org/"         target="_blank"> vue-loader    </a></li>
-            <li><a href="https://github.com/vuejs/awesome-vue" target="_blank"> awesome-vue   </a></li>
-        </ul>
-    </div>
     <div style="display:block;  min-width : 24em; vertical-align : bottom">
         <div class="s">
             <h3 v-on:click="projectile.show = !projectile.show" v-bind:class="{ active : projectile.show }">{{projectile.title}}</h3>
@@ -96,7 +80,6 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-div.hello { display : none }
 h1 {
     margin: 15px; 
     font-weight: bold;
