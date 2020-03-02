@@ -109,7 +109,7 @@ export default {
             var radius = 131;
             var ball = 5;
             var minClick = undefined;
-            var x0  = this.solution.path[0].x;
+            // var x0  = this.solution.path[0].x;
             for(var k in this.solution.path) {
                 var r = this.solution.path[k].x;
                 let u = this.solution.path[k].u;

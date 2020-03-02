@@ -120,6 +120,8 @@ const store = new Vuex.Store({
 });
 
 store.subscribe((mutation, state) => {
+    console.log(mutation)
+    console.log(state)
     console.log('store updated...');
     // updateStorage('store', state);
 })

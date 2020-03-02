@@ -2,7 +2,7 @@
     <table class="solution" v-if="solution.show">
         <tr><th>Range</th> <th>Speed</th><th>Path</th>  <th>Clicks</th> <th>Wind</th>  <th>Time</th><th>Energy</th></tr>
         <tr><th>m</th>     <th>fps</th><th>mm</th>    <th></th>       <th>mm</th>    <th>ms</th> <th>Joule</th> </tr>
-        <tr v-for="p in solution.path"  :class="p.u">
+        <tr v-for="p in solution.path"  :class="p.u" v-bind:key="p.x">
             <td>{{ p.x }}</td>
             <td>{{ (p.v  * 3.28084).toFixed(0) }}</td>
             <td>{{ (p.y * 1000).toFixed(0) }}</td>
